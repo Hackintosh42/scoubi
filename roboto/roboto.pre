@@ -1,0 +1,1306 @@
+
+# 1 "roboto.c"
+
+# 17 "C:\HT-PIC\INCLUDE\pic1687x.h"
+static volatile unsigned char TMR0 @ 0x01;
+static volatile unsigned char PCL @ 0x02;
+static volatile unsigned char STATUS @ 0x03;
+static unsigned char FSR @ 0x04;
+static volatile unsigned char PORTA @ 0x05;
+static volatile unsigned char PORTB @ 0x06;
+static volatile unsigned char PORTC @ 0x07;
+
+static volatile unsigned char PORTD @ 0x08;
+static volatile unsigned char PORTE @ 0x09;
+
+static unsigned char PCLATH @ 0x0A;
+static volatile unsigned char INTCON @ 0x0B;
+static volatile unsigned char PIR1 @ 0x0C;
+static volatile unsigned char PIR2 @ 0x0D;
+static volatile unsigned char TMR1L @ 0x0E;
+static volatile unsigned char TMR1H @ 0x0F;
+static volatile unsigned char T1CON @ 0x10;
+static volatile unsigned char TMR2 @ 0x11;
+static volatile unsigned char T2CON @ 0x12;
+
+static volatile unsigned char SSPBUF @ 0x13;
+static volatile unsigned char SSPCON @ 0x14;
+
+static volatile unsigned char CCPR1L @ 0x15;
+static volatile unsigned char CCPR1H @ 0x16;
+static volatile unsigned char CCP1CON @ 0x17;
+
+static volatile unsigned char RCSTA @ 0x18;
+static volatile unsigned char TXREG @ 0x19;
+static volatile unsigned char RCREG @ 0x1A;
+
+static volatile unsigned char CCPR2L @ 0x1B;
+static volatile unsigned char CCPR2H @ 0x1C;
+static volatile unsigned char CCP2CON @ 0x1D;
+
+
+static volatile unsigned char ADRESH @ 0x1E;
+static volatile unsigned char ADCON0 @ 0x1F;
+
+
+static unsigned char bank1 OPTION @ 0x81;
+static volatile unsigned char bank1 TRISA @ 0x85;
+static volatile unsigned char bank1 TRISB @ 0x86;
+static volatile unsigned char bank1 TRISC @ 0x87;
+
+static volatile unsigned char bank1 TRISD @ 0x88;
+static volatile unsigned char bank1 TRISE @ 0x89;
+
+static volatile unsigned char bank1 PIE1 @ 0x8C;
+static volatile unsigned char bank1 PIE2 @ 0x8D;
+static volatile unsigned char bank1 PCON @ 0x8E;
+
+static volatile unsigned char bank1 SSPCON2 @ 0x91;
+
+static volatile unsigned char bank1 PR2 @ 0x92;
+
+static volatile unsigned char bank1 SSPADD @ 0x93;
+static volatile unsigned char bank1 SSPSTAT @ 0x94;
+
+
+static volatile unsigned char bank1 TXSTA @ 0x98;
+static volatile unsigned char bank1 SPBRG @ 0x99;
+
+static volatile unsigned char bank1 ADRESL @ 0x9E;
+static volatile unsigned char bank1 ADCON1 @ 0x9F;
+
+
+static volatile unsigned char bank2 EEDATA @ 0x10C;
+static volatile unsigned char bank2 EEADR @ 0x10D;
+static volatile unsigned char bank2 EEDATH @ 0x10E;
+static volatile unsigned char bank2 EEADRH @ 0x10F;
+
+
+static volatile unsigned char bank3 EECON1 @ 0x18C;
+static volatile unsigned char bank3 EECON2 @ 0x18D;
+
+
+static volatile bit IRP @ (unsigned)&STATUS*8+7;
+static volatile bit RP1 @ (unsigned)&STATUS*8+6;
+static volatile bit RP0 @ (unsigned)&STATUS*8+5;
+static volatile bit TO @ (unsigned)&STATUS*8+4;
+static volatile bit PD @ (unsigned)&STATUS*8+3;
+static volatile bit ZERO @ (unsigned)&STATUS*8+2;
+static volatile bit DC @ (unsigned)&STATUS*8+1;
+static volatile bit CARRY @ (unsigned)&STATUS*8+0;
+
+
+static volatile bit RA5 @ (unsigned)&PORTA*8+5;
+static volatile bit RA4 @ (unsigned)&PORTA*8+4;
+static volatile bit RA3 @ (unsigned)&PORTA*8+3;
+static volatile bit RA2 @ (unsigned)&PORTA*8+2;
+static volatile bit RA1 @ (unsigned)&PORTA*8+1;
+static volatile bit RA0 @ (unsigned)&PORTA*8+0;
+
+
+static volatile bit RB7 @ (unsigned)&PORTB*8+7;
+static volatile bit RB6 @ (unsigned)&PORTB*8+6;
+static volatile bit RB5 @ (unsigned)&PORTB*8+5;
+static volatile bit RB4 @ (unsigned)&PORTB*8+4;
+static volatile bit RB3 @ (unsigned)&PORTB*8+3;
+static volatile bit RB2 @ (unsigned)&PORTB*8+2;
+static volatile bit RB1 @ (unsigned)&PORTB*8+1;
+static volatile bit RB0 @ (unsigned)&PORTB*8+0;
+
+
+static volatile bit RC7 @ (unsigned)&PORTC*8+7;
+static volatile bit RC6 @ (unsigned)&PORTC*8+6;
+static volatile bit RC5 @ (unsigned)&PORTC*8+5;
+static volatile bit RC4 @ (unsigned)&PORTC*8+4;
+static volatile bit RC3 @ (unsigned)&PORTC*8+3;
+static volatile bit RC2 @ (unsigned)&PORTC*8+2;
+static volatile bit RC1 @ (unsigned)&PORTC*8+1;
+static volatile bit RC0 @ (unsigned)&PORTC*8+0;
+
+
+
+static volatile bit RD7 @ (unsigned)&PORTD*8+7;
+static volatile bit RD6 @ (unsigned)&PORTD*8+6;
+static volatile bit RD5 @ (unsigned)&PORTD*8+5;
+static volatile bit RD4 @ (unsigned)&PORTD*8+4;
+static volatile bit RD3 @ (unsigned)&PORTD*8+3;
+static volatile bit RD2 @ (unsigned)&PORTD*8+2;
+static volatile bit RD1 @ (unsigned)&PORTD*8+1;
+static volatile bit RD0 @ (unsigned)&PORTD*8+0;
+
+
+static volatile bit RE2 @ (unsigned)&PORTE*8+2;
+static volatile bit RE1 @ (unsigned)&PORTE*8+1;
+static volatile bit RE0 @ (unsigned)&PORTE*8+0;
+
+
+
+static volatile bit GIE @ (unsigned)&INTCON*8+7;
+static volatile bit PEIE @ (unsigned)&INTCON*8+6;
+static volatile bit T0IE @ (unsigned)&INTCON*8+5;
+static volatile bit INTE @ (unsigned)&INTCON*8+4;
+static volatile bit RBIE @ (unsigned)&INTCON*8+3;
+static volatile bit T0IF @ (unsigned)&INTCON*8+2;
+static volatile bit INTF @ (unsigned)&INTCON*8+1;
+static volatile bit RBIF @ (unsigned)&INTCON*8+0;
+
+
+
+static volatile bit PSPIF @ (unsigned)&PIR1*8+7;
+
+static volatile bit ADIF @ (unsigned)&PIR1*8+6;
+
+static volatile bit RCIF @ (unsigned)&PIR1*8+5;
+static volatile bit TXIF @ (unsigned)&PIR1*8+4;
+
+
+static volatile bit SSPIF @ (unsigned)&PIR1*8+3;
+
+static volatile bit CCP1IF @ (unsigned)&PIR1*8+2;
+static volatile bit TMR2IF @ (unsigned)&PIR1*8+1;
+static volatile bit TMR1IF @ (unsigned)&PIR1*8+0;
+
+
+static volatile bit EEIF @ (unsigned)&PIR2*8+4;
+
+static volatile bit BCLIF @ (unsigned)&PIR2*8+3;
+
+static volatile bit CCP2IF @ (unsigned)&PIR2*8+0;
+
+
+
+
+static volatile bit T1CKPS1 @ (unsigned)&T1CON*8+5;
+static volatile bit T1CKPS0 @ (unsigned)&T1CON*8+4;
+static volatile bit T1OSCEN @ (unsigned)&T1CON*8+3;
+static volatile bit T1SYNC @ (unsigned)&T1CON*8+2;
+static volatile bit TMR1CS @ (unsigned)&T1CON*8+1;
+static volatile bit TMR1ON @ (unsigned)&T1CON*8+0;
+
+
+static volatile bit TOUTPS3 @ (unsigned)&T2CON*8+6;
+static volatile bit TOUTPS2 @ (unsigned)&T2CON*8+5;
+static volatile bit TOUTPS1 @ (unsigned)&T2CON*8+4;
+static volatile bit TOUTPS0 @ (unsigned)&T2CON*8+3;
+static volatile bit TMR2ON @ (unsigned)&T2CON*8+2;
+static volatile bit T2CKPS1 @ (unsigned)&T2CON*8+1;
+static volatile bit T2CKPS0 @ (unsigned)&T2CON*8+0;
+
+
+
+static volatile bit WCOL @ (unsigned)&SSPCON*8+7;
+static volatile bit SSPOV @ (unsigned)&SSPCON*8+6;
+static volatile bit SSPEN @ (unsigned)&SSPCON*8+5;
+static volatile bit CKP @ (unsigned)&SSPCON*8+4;
+static volatile bit SSPM3 @ (unsigned)&SSPCON*8+3;
+static volatile bit SSPM2 @ (unsigned)&SSPCON*8+2;
+static volatile bit SSPM1 @ (unsigned)&SSPCON*8+1;
+static volatile bit SSPM0 @ (unsigned)&SSPCON*8+0;
+
+
+static volatile bit CCP1X @ (unsigned)&CCP1CON*8+5;
+static volatile bit CCP1Y @ (unsigned)&CCP1CON*8+4;
+static volatile bit CCP1M3 @ (unsigned)&CCP1CON*8+3;
+static volatile bit CCP1M2 @ (unsigned)&CCP1CON*8+2;
+static volatile bit CCP1M1 @ (unsigned)&CCP1CON*8+1;
+static volatile bit CCP1M0 @ (unsigned)&CCP1CON*8+0;
+
+
+
+static volatile bit SPEN @ (unsigned)&RCSTA*8+7;
+static volatile bit RX9 @ (unsigned)&RCSTA*8+6;
+static volatile bit SREN @ (unsigned)&RCSTA*8+5;
+static volatile bit CREN @ (unsigned)&RCSTA*8+4;
+static volatile bit ADDEN @ (unsigned)&RCSTA*8+3;
+static volatile bit FERR @ (unsigned)&RCSTA*8+2;
+static volatile bit OERR @ (unsigned)&RCSTA*8+1;
+static volatile bit RX9D @ (unsigned)&RCSTA*8+0;
+
+
+
+
+static volatile bit CCP2X @ (unsigned)&CCP2CON*8+5;
+static volatile bit CCP2Y @ (unsigned)&CCP2CON*8+4;
+static volatile bit CCP2M3 @ (unsigned)&CCP2CON*8+3;
+static volatile bit CCP2M2 @ (unsigned)&CCP2CON*8+2;
+static volatile bit CCP2M1 @ (unsigned)&CCP2CON*8+1;
+static volatile bit CCP2M0 @ (unsigned)&CCP2CON*8+0;
+
+
+
+static volatile bit ADCS1 @ (unsigned)&ADCON0*8+7;
+static volatile bit ADCS0 @ (unsigned)&ADCON0*8+6;
+static volatile bit CHS2 @ (unsigned)&ADCON0*8+5;
+static volatile bit CHS1 @ (unsigned)&ADCON0*8+4;
+static volatile bit CHS0 @ (unsigned)&ADCON0*8+3;
+static volatile bit ADGO @ (unsigned)&ADCON0*8+2;
+static volatile bit ADON @ (unsigned)&ADCON0*8+0;
+
+
+static bank1 bit RBPU @ (unsigned)&OPTION*8+7;
+static bank1 bit INTEDG @ (unsigned)&OPTION*8+6;
+static bank1 bit T0CS @ (unsigned)&OPTION*8+5;
+static bank1 bit T0SE @ (unsigned)&OPTION*8+4;
+static bank1 bit PSA @ (unsigned)&OPTION*8+3;
+static bank1 bit PS2 @ (unsigned)&OPTION*8+2;
+static bank1 bit PS1 @ (unsigned)&OPTION*8+1;
+static bank1 bit PS0 @ (unsigned)&OPTION*8+0;
+
+
+static volatile bank1 bit TRISA5 @ (unsigned)&TRISA*8+5;
+static volatile bank1 bit TRISA4 @ (unsigned)&TRISA*8+4;
+static volatile bank1 bit TRISA3 @ (unsigned)&TRISA*8+3;
+static volatile bank1 bit TRISA2 @ (unsigned)&TRISA*8+2;
+static volatile bank1 bit TRISA1 @ (unsigned)&TRISA*8+1;
+static volatile bank1 bit TRISA0 @ (unsigned)&TRISA*8+0;
+
+
+static volatile bank1 bit TRISB7 @ (unsigned)&TRISB*8+7;
+static volatile bank1 bit TRISB6 @ (unsigned)&TRISB*8+6;
+static volatile bank1 bit TRISB5 @ (unsigned)&TRISB*8+5;
+static volatile bank1 bit TRISB4 @ (unsigned)&TRISB*8+4;
+static volatile bank1 bit TRISB3 @ (unsigned)&TRISB*8+3;
+static volatile bank1 bit TRISB2 @ (unsigned)&TRISB*8+2;
+static volatile bank1 bit TRISB1 @ (unsigned)&TRISB*8+1;
+static volatile bank1 bit TRISB0 @ (unsigned)&TRISB*8+0;
+
+
+static volatile bank1 bit TRISC7 @ (unsigned)&TRISC*8+7;
+static volatile bank1 bit TRISC6 @ (unsigned)&TRISC*8+6;
+static volatile bank1 bit TRISC5 @ (unsigned)&TRISC*8+5;
+static volatile bank1 bit TRISC4 @ (unsigned)&TRISC*8+4;
+static volatile bank1 bit TRISC3 @ (unsigned)&TRISC*8+3;
+static volatile bank1 bit TRISC2 @ (unsigned)&TRISC*8+2;
+static volatile bank1 bit TRISC1 @ (unsigned)&TRISC*8+1;
+static volatile bank1 bit TRISC0 @ (unsigned)&TRISC*8+0;
+
+
+
+static volatile bank1 bit TRISD7 @ (unsigned)&TRISD*8+7;
+static volatile bank1 bit TRISD6 @ (unsigned)&TRISD*8+6;
+static volatile bank1 bit TRISD5 @ (unsigned)&TRISD*8+5;
+static volatile bank1 bit TRISD4 @ (unsigned)&TRISD*8+4;
+static volatile bank1 bit TRISD3 @ (unsigned)&TRISD*8+3;
+static volatile bank1 bit TRISD2 @ (unsigned)&TRISD*8+2;
+static volatile bank1 bit TRISD1 @ (unsigned)&TRISD*8+1;
+static volatile bank1 bit TRISD0 @ (unsigned)&TRISD*8+0;
+
+
+static volatile bank1 bit IBF @ (unsigned)&TRISE*8+7;
+static volatile bank1 bit OBF @ (unsigned)&TRISE*8+6;
+static volatile bank1 bit IBOV @ (unsigned)&TRISE*8+5;
+static volatile bank1 bit PSPMODE @ (unsigned)&TRISE*8+4;
+
+static volatile bank1 bit TRISE2 @ (unsigned)&TRISE*8+2;
+static volatile bank1 bit TRISE1 @ (unsigned)&TRISE*8+1;
+static volatile bank1 bit TRISE0 @ (unsigned)&TRISE*8+0;
+
+
+
+
+static volatile bank1 bit PSPIE @ (unsigned)&PIE1*8+7;
+
+static volatile bank1 bit ADIE @ (unsigned)&PIE1*8+6;
+
+static volatile bank1 bit RCIE @ (unsigned)&PIE1*8+5;
+static volatile bank1 bit TXIE @ (unsigned)&PIE1*8+4;
+
+static volatile bank1 bit SSPIE @ (unsigned)&PIE1*8+3;
+static volatile bank1 bit CCP1IE @ (unsigned)&PIE1*8+2;
+static volatile bank1 bit TMR2IE @ (unsigned)&PIE1*8+1;
+static volatile bank1 bit TMR1IE @ (unsigned)&PIE1*8+0;
+
+
+static volatile bank1 bit EEIE @ (unsigned)&PIE2*8+4;
+static volatile bank1 bit BCLIE @ (unsigned)&PIE2*8+3;
+
+static volatile bank1 bit CCP2IE @ (unsigned)&PIE2*8+0;
+
+
+
+static volatile bank1 bit POR @ (unsigned)&PCON*8+1;
+static volatile bank1 bit BOR @ (unsigned)&PCON*8+0;
+
+
+
+static volatile bank1 bit GCEN @ (unsigned)&SSPCON2*8+7;
+static volatile bank1 bit ACKSTAT @ (unsigned)&SSPCON2*8+6;
+static volatile bank1 bit ACKDT @ (unsigned)&SSPCON2*8+5;
+static volatile bank1 bit ACKEN @ (unsigned)&SSPCON2*8+4;
+static volatile bank1 bit RCEN @ (unsigned)&SSPCON2*8+3;
+static volatile bank1 bit PEN @ (unsigned)&SSPCON2*8+2;
+static volatile bank1 bit RSEN @ (unsigned)&SSPCON2*8+1;
+static volatile bank1 bit SEN @ (unsigned)&SSPCON2*8+0;
+
+
+
+
+static volatile bank1 bit STAT_SMP @ (unsigned)&SSPSTAT*8+7;
+static volatile bank1 bit STAT_CKE @ (unsigned)&SSPSTAT*8+6;
+static volatile bank1 bit STAT_DA @ (unsigned)&SSPSTAT*8+5;
+static volatile bank1 bit STAT_P @ (unsigned)&SSPSTAT*8+4;
+static volatile bank1 bit STAT_S @ (unsigned)&SSPSTAT*8+3;
+static volatile bank1 bit STAT_RW @ (unsigned)&SSPSTAT*8+2;
+static volatile bank1 bit STAT_UA @ (unsigned)&SSPSTAT*8+1;
+static volatile bank1 bit STAT_BF @ (unsigned)&SSPSTAT*8+0;
+
+
+
+
+static volatile bank1 bit CSRC @ (unsigned)&TXSTA*8+7;
+static volatile bank1 bit TX9 @ (unsigned)&TXSTA*8+6;
+static volatile bank1 bit TXEN @ (unsigned)&TXSTA*8+5;
+static volatile bank1 bit SYNC @ (unsigned)&TXSTA*8+4;
+static volatile bank1 bit BRGH @ (unsigned)&TXSTA*8+2;
+static volatile bank1 bit TRMT @ (unsigned)&TXSTA*8+1;
+static volatile bank1 bit TX9D @ (unsigned)&TXSTA*8+0;
+
+
+
+static volatile bank1 bit ADFM @ (unsigned)&ADCON1*8+7;
+static volatile bank1 bit PCFG3 @ (unsigned)&ADCON1*8+3;
+static volatile bank1 bit PCFG2 @ (unsigned)&ADCON1*8+2;
+static volatile bank1 bit PCFG1 @ (unsigned)&ADCON1*8+1;
+static volatile bank1 bit PCFG0 @ (unsigned)&ADCON1*8+0;
+
+
+static volatile bank3 bit EEPGD @ (unsigned)&EECON1*8+7;
+static volatile bank3 bit WRERR @ (unsigned)&EECON1*8+3;
+static volatile bank3 bit WREN @ (unsigned)&EECON1*8+2;
+static volatile bank3 bit WR @ (unsigned)&EECON1*8+1;
+static volatile bank3 bit RD @ (unsigned)&EECON1*8+0;
+
+# 392
+extern void eeprom_write(unsigned char addr, unsigned char value);
+extern unsigned char eeprom_read(unsigned char addr);
+
+# 16 "roboto.h"
+static bit LED0 @ ((unsigned)&(PORTC)*8+(0));
+static bit LED1 @ ((unsigned)&(PORTC)*8+(1));
+static bit GRIPPER @ ((unsigned)&(PORTC)*8+(3));
+static bit SW0 @ ((unsigned)&(PORTA)*8+(0));
+static bit SW1 @ ((unsigned)&(PORTA)*8+(1));
+static bit SW2 @ ((unsigned)&(PORTA)*8+(2));
+static bit _CRDAT3 @ ((unsigned)&(PORTC)*8+(2));
+static bit IICSCL @ ((unsigned)&(PORTC)*8+(3));
+static bit IICSDA @ ((unsigned)&(PORTC)*8+(4));
+static bit _CRDAT4 @ ((unsigned)&(PORTC)*8+(5));
+static bit TXD @ ((unsigned)&(PORTC)*8+(6));
+static bit RXD @ ((unsigned)&(PORTC)*8+(7));
+
+# 43
+typedef struct sCharQ{
+unsigned char waiting;
+unsigned char timeout;
+unsigned char forceread;
+unsigned char rdptr;
+unsigned char wrptr;
+unsigned char buf[32];
+};
+
+# 57
+typedef struct sCmd{
+unsigned char dir;
+int steps;
+};
+
+
+
+
+typedef struct sCmdQ{
+unsigned char rdptr;
+unsigned char wrptr;
+struct sCmd ringbuf[4];
+};
+
+# 89
+int MOTORMAXPOSITION[3] = {1200,1200,0};
+int MOTORMINPOSITION[3] = {-200,0,0};
+
+
+
+bank2 unsigned char coilpattern[8] ={0x09, 0x01, 0x03, 0x02, 0x06, 0x04, 0x0c, 0x08};
+
+typedef struct sMotorcmd{
+int steps;
+unsigned char direction;
+unsigned char speed;
+};
+
+typedef struct sMotor{
+struct sMotorcmd cmdQ[4];
+unsigned char state;
+unsigned char nextstate;
+int position;
+int steps;
+int step_cnt;
+unsigned char coils;
+unsigned char speed;
+unsigned char speed_cnt;
+unsigned char coilpattern_cnt;
+};
+
+typedef struct sLinearMotor{
+unsigned char state;
+unsigned char timeon;
+}
+
+# 124
+typedef struct sSwtimer{
+unsigned char cmp;
+unsigned char cnt;
+unsigned char enable;
+};
+
+# 6 "roboto.c"
+bank2 struct sMotor motor[3];
+bank3 struct sCmdQ gCmdQ[3];
+struct sSwtimer gSwtimer[2];
+
+bank1 struct sCharQ RXQ;
+int i;
+unsigned char gMotorselected =0;
+static bit gStepmotors =0;
+static bit gStopmotors =0;
+unsigned char gHalfstep = 1;
+unsigned char gTerminal = 1;
+unsigned char printflag =0;
+unsigned char gHwtimer0_cnt =0;
+unsigned char gHomeswitch[3];
+unsigned char gLedcnt;
+
+# 26
+unsigned char Q_read(unsigned char n, struct sCmd *cmd);
+void Q_write(unsigned char n, struct sCmd *cmd);
+unsigned char Q_checkempty(unsigned char n);
+
+char read_RXQ(void);
+char readnoinc_RXQ(void);
+void handle_RX(void);
+void handle_TMR0();
+void handle_steppermotors(void);
+void handle_led(void);
+void Init(void);
+void Init_comms(void);
+void Init_hwtimers(void);
+void Init_swtimers(void);
+
+void printc(unsigned char c);
+void printnum(int n);
+void printnum_4d(int n);
+unsigned char RXQ_empty(void);
+unsigned char checkforbytes_RXQ(unsigned char cnt);
+void WDJ_protocol_handler(void);
+void handle_homeswitches(void);
+
+# 55
+unsigned char Q_read(unsigned char n, struct sCmd *cmd)
+{
+if (gCmdQ[n].rdptr == gCmdQ[n].wrptr)
+{
+return(0);
+}
+else
+{
+if ((++gCmdQ[n].rdptr) > (4)-1)
+gCmdQ[n].rdptr = 0;
+*cmd = gCmdQ[n].ringbuf[gCmdQ[n].rdptr];
+return(1);
+}
+}
+
+
+
+
+void Q_write(unsigned char n, struct sCmd *cmd)
+{
+if(++gCmdQ[n].wrptr > 4-1)
+gCmdQ[n].wrptr = 0;
+
+gCmdQ[n].ringbuf[gCmdQ[n].wrptr] =*cmd;
+}
+
+
+
+
+unsigned char Q_checkempty(unsigned char n)
+{
+if(gCmdQ[n].rdptr == gCmdQ[n].wrptr)
+return(1);
+else
+return(0);
+}
+
+# 97
+unsigned char read_RXQ(void)
+{
+if (RXQ.rdptr == RXQ.wrptr)
+return(0);
+else
+{
+if ((++RXQ.rdptr) > 32-1)
+RXQ.rdptr = 0;
+return(RXQ.buf[RXQ.rdptr]);
+}
+}
+
+# 113
+char readnoinc_RXQ(void)
+{
+unsigned char tmpptr;
+
+if (RXQ.rdptr == RXQ.wrptr)
+return(0);
+else
+{
+tmpptr = RXQ.rdptr;
+if ((++tmpptr) > 32-1)
+tmpptr = 0;
+return(RXQ.buf[tmpptr]);
+}
+}
+
+# 133
+void handle_RX(void)
+{
+
+if(++RXQ.wrptr > 32-1)
+RXQ.wrptr = 0;
+
+RXQ.buf[RXQ.wrptr]=RCREG;
+}
+
+void handle_TMR0()
+{
+if(++gHwtimer0_cnt == 10)
+{
+gHwtimer0_cnt = 0;
+
+if(gSwtimer[0].enable)
+if(++gSwtimer[0].cnt > gSwtimer[0].cmp)
+{
+GRIPPER = 0;
+gSwtimer[0].enable = 0;
+}
+if(gSwtimer[1].enable)
+if(++gSwtimer[1].cnt > gSwtimer[1].cmp)
+{
+gSwtimer[1].cnt = 0;
+gStepmotors = 1;
+}
+}
+}
+void handle_TMR2()
+{
+}
+
+
+
+static void interrupt isr(void)
+{
+
+if(RBIF)
+{
+RBIF=0;
+RBIE=1;
+}
+
+if(INTF)
+{
+INTF=0;
+}
+
+if(T0IF)
+{
+handle_TMR0();
+T0IF=0;
+}
+if(TMR2IF)
+{
+handle_TMR2();
+TMR2IF=0;
+}
+
+if(RCIF)
+{
+RCIE=0;
+handle_RX();
+RCIE=1;
+}
+}
+
+# 205
+void Init(void)
+{
+
+
+
+TRISA=0b00001111;
+TRISB=0b11111111;
+TRISC=0b10100000;
+TRISD=0b00000000;
+TRISE=0b00000000;
+
+PORTD = 0x0;
+RBPU=1;
+ADCON1=0x07;
+RBIF=0;
+T0IF=0;
+T0IE=0;
+RBIE=1;
+
+
+GIE=1;
+LED0=1;
+}
+
+# 233
+void Init_comms(void)
+{
+RXQ.rdptr = 0;
+RXQ.wrptr = 0;
+RXQ.forceread = 0;
+RXQ.waiting = 0;
+RXQ.timeout = 0;
+
+BRGH=1;
+SPBRG=12;
+SPEN=1;
+TXEN=1;
+SYNC = 0;
+CREN = 1;
+
+TXIE = 0;
+RCIE = 1;
+PEIE = 1;
+}
+
+# 258
+void Init_swtimers(void)
+{
+
+gSwtimer[0].cmp = 0x4;
+gSwtimer[0].cnt = 0;
+gSwtimer[0].enable = 0;
+
+
+gSwtimer[1].cmp = 1;
+gSwtimer[1].cnt = 0;
+gSwtimer[1].enable = 1;
+}
+
+# 275
+void Init_hwtimers(void)
+{
+
+T0CS=0;
+T0IE=1;
+
+# 285
+T2CON = (0x0f<<3) & (1<<2);
+TMR2IE=0;
+}
+
+# 293
+void printc(unsigned char c)
+{
+
+while(TXIF==0) asm("nop");
+TXREG=c;
+}
+
+# 304
+void newline(void)
+{
+if(gTerminal)
+{
+printc(0x0a);printc(0x0d);
+}
+}
+
+# 316
+void printnum(int n)
+{
+unsigned char tmp;
+tmp = 0;
+while(n>=100)
+{
+n = n -100;
+tmp +=1;
+}
+printc('0'+tmp);
+tmp = 0;;
+while(n>=10)
+{
+n = n -10;
+tmp +=1;
+}
+printc('0'+tmp);
+printc('0'+n);
+}
+
+
+
+
+void printnum_4d(int n)
+{
+unsigned char tmp;
+tmp = 0;
+while(n>=1000)
+{
+n = n -1000;
+tmp +=1;
+}
+printc('0'+tmp);
+while(n>=100)
+{
+n = n -100;
+tmp +=1;
+}
+printc('0'+tmp);
+tmp = 0;;
+while(n>=10)
+{
+n = n -10;
+tmp +=1;
+}
+printc('0'+tmp);
+printc('0'+n);
+}
+
+# 369
+unsigned char RXQ_empty(void)
+{
+if(RXQ.rdptr == RXQ.wrptr)
+return(1);
+else
+return(0);
+}
+
+# 381
+unsigned char checkforbytes_RXQ(unsigned char cnt)
+{
+if (RXQ.wrptr >= RXQ.rdptr)
+{
+if((RXQ.wrptr - RXQ.rdptr) >= cnt)
+return(1);
+}
+else
+{
+if (((32 - RXQ.rdptr) + RXQ.wrptr) >= cnt)
+return(1);
+}
+return(0);
+}
+
+# 400
+void WDJ_protocol_handler(void)
+{
+unsigned char data[4];
+static struct sCmd tmpcmd;
+
+if (!checkforbytes_RXQ(RXQ.waiting))
+{
+
+# 416
+}
+else
+{
+RXQ.waiting =0;
+RXQ.timeout =0;
+
+
+if(RXQ.forceread)
+{
+RXQ.forceread = 0;
+read_RXQ();
+}
+
+switch(readnoinc_RXQ())
+{
+
+case 'a':
+read_RXQ();
+printc('a');
+Q_write(gMotorselected,&tmpcmd);
+break;
+
+
+case 'm':
+RXQ.waiting = 2;
+if(checkforbytes_RXQ(RXQ.waiting))
+{
+read_RXQ();
+data[0] = read_RXQ();
+printc('m');
+switch(data[0])
+{
+case 'h':
+gMotorselected =0;
+printc('h');
+break;
+case 'v':
+gMotorselected = 1;
+printc('v');
+break;
+case 'g':
+gMotorselected = 2;
+printc('g');
+break;
+default:
+gMotorselected = 0xff;
+printc('!');
+break;
+}
+
+RXQ.waiting = 0;
+}
+break;
+
+
+case 'c':
+RXQ.waiting = 2;
+if(checkforbytes_RXQ(RXQ.waiting))
+{
+read_RXQ();
+printc('c');
+if (read_RXQ() == 'd')
+{
+if (gMotorselected == 1)
+{
+
+tmpcmd.dir = 7; tmpcmd.steps = MOTORMAXPOSITION[gMotorselected];
+Q_write(gMotorselected,&tmpcmd);
+printc('d');
+}
+else printc('!');
+}
+else
+{
+printc('!');
+}
+RXQ.waiting = 0;
+}
+break;
+
+
+
+
+case 'h':
+RXQ.waiting = 4;
+if(checkforbytes_RXQ(RXQ.waiting))
+{
+read_RXQ();
+printc('h');
+if ((read_RXQ() == 'o') && (read_RXQ() == 'm') && (read_RXQ() =='e') )
+{
+
+tmpcmd.dir = 5; tmpcmd.steps = MOTORMAXPOSITION[gMotorselected];
+Q_write(gMotorselected,&tmpcmd);
+printc('o');printc('m');printc('e');
+}
+else
+{
+printc('!');printc('!');printc('!');
+}
+RXQ.waiting = 0;
+}
+break;
+
+
+case 'f':
+RXQ.waiting = 4;
+if(checkforbytes_RXQ(RXQ.waiting))
+{
+read_RXQ();
+tmpcmd.dir = 2;
+tmpcmd.steps = (read_RXQ()- '0')*100 + (read_RXQ()-'0')*10 + (read_RXQ()-'0');
+Q_write(gMotorselected,&tmpcmd);
+
+printc('f');
+printnum(tmpcmd.steps);
+RXQ.waiting = 0;
+}
+break;
+case 'r':
+RXQ.waiting = 4;
+if(checkforbytes_RXQ(RXQ.waiting))
+{
+read_RXQ();
+tmpcmd.dir = 3;
+tmpcmd.steps = (read_RXQ()- '0')*100 + (read_RXQ()-'0')*10 + (read_RXQ()-'0');
+Q_write(gMotorselected,&tmpcmd);
+printc('r'); printnum(tmpcmd.steps);
+RXQ.waiting = 0;
+}
+break;
+
+
+case 'v':
+RXQ.waiting = 4;
+if(checkforbytes_RXQ(RXQ.waiting))
+{
+read_RXQ();
+motor[gMotorselected].speed = (read_RXQ()- '0')*100 + (read_RXQ()- '0')*10 + (read_RXQ()-'0');
+printc('v'); printnum(motor[gMotorselected].speed);
+RXQ.waiting = 0;
+}
+break;
+
+case 's':
+read_RXQ();
+printc('s');
+gStopmotors = 1;
+RXQ.waiting = 0;
+break;
+
+case 'p':
+read_RXQ();
+printc('p');
+printnum_4d(motor[i].position);
+RXQ.waiting = 0;
+break;
+
+case 0:
+break;
+
+default:
+read_RXQ();
+RXQ.waiting = 0;
+printc('?');
+break;
+}
+
+newline();
+}
+}
+
+# 595
+void Init_motors(void)
+{
+unsigned char i;
+gMotorselected = 0;
+for(i=0;i<3;i++)
+{
+motor[i].state = 0;
+motor[i].steps = 0;
+motor[i].step_cnt = 0;
+motor[i].coils = 0b0000;
+motor[i].speed = 0;
+motor[i].speed_cnt = 0;
+motor[i].coilpattern_cnt =0;
+motor[i].coils = coilpattern[0];
+}
+
+motor[0].speed = 0;
+motor[1].speed = 2;
+
+
+motor[0].position = 0;
+motor[1].position = 0;
+
+}
+
+# 624
+void motoroff(unsigned char num)
+{
+unsigned char tmp;
+switch(num)
+{
+case 0:
+tmp = PORTD & 0b11110000;
+PORTD = tmp;
+break;
+case 1:
+tmp = PORTD & 0b00001111;
+PORTD = tmp;
+break;
+case 2:
+GRIPPER = 0;
+break;
+default:
+break;
+}
+}
+
+# 649
+void output_motor(unsigned char num)
+{
+unsigned char tmp;
+switch(num)
+{
+case 0:
+tmp = PORTD & 0b11110000;
+tmp |= motor[0].coils;
+PORTD = tmp;
+break;
+case 1:
+tmp = PORTD & 0b00001111;
+tmp |= (motor[1].coils)<<4;
+PORTD = tmp;
+break;
+case 2:
+
+gSwtimer[0].cnt = 0;
+gSwtimer[0].enable = 1;
+GRIPPER = 1;
+default:
+break;
+}
+}
+
+
+
+
+void handle_homeswitches(void)
+{
+
+if((PORTA & 0x02)>>1)
+{
+gHomeswitch[0] = 1;
+}
+if(!((PORTA&0x04)>>2))
+{
+gHomeswitch[1] = 1;
+}
+if(PORTA & 0x01)
+{
+gHomeswitch[2] = 1;
+}
+}
+
+# 698
+void handle_steppermotors(void)
+{
+unsigned char i;
+struct sCmd tmpcmd;
+
+for(i=0;i<3; i++)
+{
+
+if(gStopmotors)
+{
+motor[i].nextstate= 1;
+
+while(!Q_checkempty(i))
+Q_read(i,&tmpcmd);
+
+}
+else
+{
+switch(motor[i].state)
+{
+
+
+
+case 0:
+if(Q_checkempty(i)== 0)
+{
+Q_read(i, &tmpcmd);
+
+if ( (((motor[i].position + tmpcmd.steps) < MOTORMAXPOSITION[i]) &&(tmpcmd.dir==2)) ||
+(((motor[i].position - tmpcmd.steps) > MOTORMINPOSITION[i]) &&(tmpcmd.dir==3)))
+{
+motor[i].step_cnt = 0;
+motor[i].steps = tmpcmd.steps;
+motor[i].nextstate = tmpcmd.dir;
+}
+else
+{
+
+
+gStopmotors = 1;
+printc('E');printc('_');printc('P');printc('O');printc('S');printc('-');
+switch(i)
+{
+case 0: printc('H'); break;
+case 1: printc('V'); break;
+case 2: printc('G'); break;
+}
+printc(' ');newline();
+
+}
+gHomeswitch[0]=0; gHomeswitch[1]=0; gHomeswitch[2]=0;
+
+}
+else
+motor[i].nextstate = 0;
+break;
+
+case 1:
+motoroff(i);
+motor[i].nextstate = 0;
+break;
+
+case 8:
+printc('E');printc('_');printc('C');printc('D');printc(' ');printc(' ');printc(' ');printc(' ');
+newline();
+motor[i].nextstate = 1;
+break;
+
+
+case 6:
+printc('E');printc('_');printc('H');printc('O');printc('M');printc('E');printc('-');
+switch(i)
+{
+case 0: printc('H'); break;
+case 1: printc('V'); break;
+case 2: printc('G'); break;
+}
+newline();
+motor[i].nextstate = 1;
+break;
+
+case 7:
+case 5:
+case 2:
+case 3:
+if(gStopmotors)
+{
+motor[i].nextstate= 1;
+
+while(!Q_checkempty(i))
+Q_read(i,&tmpcmd);
+}
+else
+{
+
+if (++motor[i].speed_cnt > motor[i].speed)
+{
+if (++motor[i].step_cnt > motor[i].steps)
+{
+switch(motor[i].state)
+{
+case 5: motor[i].nextstate = 6; break;
+case 7 : motor[i].nextstate = 8; break;
+default : motor[i].nextstate = 1; break;
+}
+}
+else
+{
+motor[i].nextstate = motor[i].state;
+motor[i].speed_cnt = 0;
+switch(motor[i].state)
+{
+case 5:
+case 2:
+motor[i].position++;
+
+if(++motor[i].coilpattern_cnt > 7)
+motor[i].coilpattern_cnt = 0;
+motor[i].coils = coilpattern[motor[i].coilpattern_cnt];
+break;
+
+case 7:
+case 3:
+motor[i].position--;
+if(motor[i].coilpattern_cnt == 0)
+motor[i].coilpattern_cnt = 7;
+else
+motor[i].coilpattern_cnt--;
+
+motor[i].coils = coilpattern[motor[i].coilpattern_cnt];
+break;
+
+default :
+break;
+}
+output_motor(i);
+}
+}
+}
+if ((motor[i].state == 5) && (gHomeswitch[i]))
+{
+printc('O');printc('K');printc('_');
+
+switch(i)
+{
+case 0: printc('H'); break;
+case 1: printc('V'); break;
+case 2: printc('G'); break;
+}
+newline();
+motor[i].nextstate = 1;
+motor[i].position = 0;
+}
+if ((motor[i].state == 7) && (gHomeswitch[2]))
+{
+printc('O');printc('K');printc('_');printc('C');printc('D');
+printc(0x0a);printc(0x0d);
+motor[i].nextstate = 1;
+}
+
+
+break;
+
+default:
+break;
+}
+}
+motor[i].state = motor[i].nextstate;
+}
+
+gStopmotors = 0;
+
+}
+
+# 876
+void handle_led(void)
+{
+if(++gLedcnt > 253)
+{
+LED0 = !LED0;
+gLedcnt = 0;
+}
+}
+
+# 889
+void Init_cmdQ(void)
+{
+for(i=0;i<3; i++)
+{
+gCmdQ[i].rdptr = 0;
+gCmdQ[i].wrptr = 0;
+}
+}
+
+
+
+
+void Init_message(void)
+{
+printc('R');printc('O');printc('B');printc('O');printc('T');printc('O');printc(' ');
+printc('R');printc('E');printc('A');printc('D');printc('Y');
+printc(0x0a);printc(0x0d);
+}
+
+# 913
+void main(void)
+{
+Init();
+Init_comms();
+Init_cmdQ();
+Init_motors();
+Init_swtimers();
+Init_hwtimers();
+Init_message();
+
+gHomeswitch[0] = 0; gHomeswitch[1] = 0; gHomeswitch[2] = 0;
+while(1)
+{
+
+
+if(!RXQ_empty())
+WDJ_protocol_handler();
+
+
+if(gStepmotors)
+{
+gStepmotors =0;
+handle_homeswitches();
+handle_steppermotors();
+handle_led();
+}
+
+}
+}

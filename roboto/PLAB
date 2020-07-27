@@ -1,0 +1,562 @@
+Linker command line:
+
+-z -MPLAB -oC:\DOCUME~1\root\LOCALS~1\Temp\l.obj \
+  -ppowerup=0,intentry=4,intcode,intret,init,end_init,clrtext,stringtable,strings \
+  -ABANK0=020h-07Fh -prbit_0=BANK0,rbss_0=BANK0,rdata_0=BANK0,idata_0=CODE \
+  -ABANK1=0A0h-0EFh -prbit_1=BANK1,rbss_1=BANK1,rdata_1=BANK1,idata_1=CODE \
+  -ABANK2=0110h-016Fh \
+  -prbit_2=BANK2,rbss_2=BANK2,rdata_2=BANK2,idata_2=CODE \
+  -ABANK3=0190h-01EFh \
+  -prbit_3=BANK3,rbss_3=BANK3,rdata_3=BANK3,idata_3=CODE \
+  -ACOMBANK=070h-07Fh -ptemp=COMBANK -ACODE=0-7FFhx4 -ACONST=0-0FFhx32 \
+  -pconfig=2007h -pidloc=2000h \
+  -pfloat_text0=CODE,float_text1=CODE,float_text2=CODE \
+  -pfloat_text3=CODE,float_text4=CODE \
+  -pnvram=BANK0,nvram_1=BANK1,nvram_2=BANK2,nvram_3=BANK3 -Q16F877 \
+  -h+roboto.sym C:\HT-PIC\LIB\picrt422.obj C:\Roboto\ROBOTO.OBJ \
+  C:\HT-PIC\LIB\pic422-c.lib 
+
+Object code version is 3.7
+
+Machine type is 16F877
+
+Call graph:
+
+*_main size 0,0 offset 0
+     _Init
+     _Init_comms
+     _Init_cmdQ
+     _Init_motors size 0,1 offset 0
+     _Init_swtimers
+     _Init_hwtimers
+     _Init_world
+     _Init_homemotors size 0,3 offset 0
+         _Q_write size 1,1 offset 4
+*    _prints size 2,1 offset 9
+*        _printc size 0,1 offset 12
+*    _newline->_printc size 0,1 offset 12
+     _RXQ_empty
+     _WDJ_protocol_handler size 0,4 offset 0
+         _checkforbytes_RXQ size 0,1 offset 4
+         _read_RXQ
+         _printc size 0,1 offset 12
+         _Q_write size 1,1 offset 4
+         _printnum size 2,1 offset 4
+             _printc size 0,1 offset 12
+         _printnum_4d size 2,1 offset 4
+             _printc size 0,1 offset 12
+         _readnoinc_RXQ size 0,1 offset 4
+         _newline->_newline size 0,0 offset 9
+             _printc size 0,1 offset 12
+     _handle_homeswitches
+*    _handle_steppermotors size 0,8 offset 0
+         _Q_checkempty size 0,1 offset 8
+         _Q_read size 1,1 offset 8
+         _motoroff size 0,2 offset 8
+         _error_cd size 0,0 offset 8
+             _printc size 0,1 offset 12
+             _newline->_newline size 0,0 offset 9
+                 _printc size 0,1 offset 12
+*        _error_max size 0,1 offset 8
+*            _prints size 2,1 offset 9
+*                _printc size 0,1 offset 12
+*            _printc size 0,1 offset 12
+*            _newline->_newline size 0,0 offset 9
+*                _printc size 0,1 offset 12
+         _nextcoil size 1,1 offset 8
+*        _error_min size 0,1 offset 8
+*            _prints size 2,1 offset 9
+*                _printc size 0,1 offset 12
+*            _printc size 0,1 offset 12
+*            _newline->_newline size 0,0 offset 9
+*                _printc size 0,1 offset 12
+         _output_motor size 0,2 offset 8
+*        _ok_home size 0,1 offset 8
+*            _prints size 2,1 offset 9
+*                _printc size 0,1 offset 12
+*            _printc size 0,1 offset 12
+*            _newline->_newline size 0,0 offset 9
+*                _printc size 0,1 offset 12
+         _ok_cd size 0,0 offset 8
+             _prints size 2,1 offset 9
+                 _printc size 0,1 offset 12
+             _newline->_newline size 0,0 offset 9
+                 _printc size 0,1 offset 12
+     _handle_led
+     _duplicator_statemachine size 0,3 offset 0
+         _Q_write size 1,1 offset 4
+*_isr size 0,0 offset 13
+*    _handle_TMR0
+*    _handle_TMR2
+*    _handle_RX
+
+		Name          Link     Load   Length Selector Space Scale
+C:\HT-PIC\LIB\picrt422.obj
+		end_init        63       63        4       8     0
+C:\Roboto\ROBOTO.OBJ
+		rbss_0          21       21       19      20     1
+		rbss_2         110      110       4E     110     1
+		rbss_3         190      190       38     190     1
+		rdata_0         47       47        2      20     1
+		temp            70       70        6      70     1
+		rbit_0         100       20        2      20     1    8
+		idata_0        7FE      7FE        2     FFC     0
+		intcode          D        D       32       8     0
+		intret          3F       3F        9       8     0
+		intentry         4        4        9       8     0
+		intsave_0       76       76        1      70     1
+		const1        1049     1049        7    2000     0
+		const2        1042     1042        7    2000     0
+		const3        1018     1018        9    2000     0
+		const4        1000     1000        E    2000     0
+		const5        100E     100E        A    2000     0
+		const6        102A     102A        8    2000     0
+		const7        1021     1021        9    2000     0
+		const8        103A     103A        8    2000     0
+		const9        1032     1032        8    2000     0
+		text0          B3F      B3F       81    167E     0
+		text1          9FA      9FA       60    13F4     0
+		text2         173E     173E       2B    2E7C     0
+		text3         16AB     16AB       20    2D56     0
+		text4         16CB     16CB       22    2D96     0
+		text5         1634     1634       15    2C68     0
+		text6         1799     1799       33    2F32     0
+		text7         15C6     15C6        3    2B8C     0
+		intsave         49       49        3      20     1
+		text9         1691     1691       1A    2D22     0
+		text10        1678     1678       19    2CF0     0
+		text11        15E0     15E0        E    2BC0     0
+		text12        15C9     15C9        B    2B92     0
+		text13        160D     160D       12    2C1A     0
+		text14        1769     1769       30    2ED2     0
+		text15        1649     1649       16    2C92     0
+		text16         9AE      9AE       4C    135C     0
+		text17         AC6      AC6       79    158C     0
+		text18        15FD     15FD       10    2BFA     0
+		text19         964      964       4A    12C8     0
+		text20         C5C      C5C      3A4    18B8     0
+		text21         16E      16E       BD     2DC     0
+		text22        1714     1714       2A    2E28     0
+		text23         84D      84D       37    109A     0
+		text24        16ED     16ED       27    2DDA     0
+		text25         884      884       38    1108     0
+		text26         8BC      8BC       38    1178     0
+		text27         8F4      8F4       38    11E8     0
+		text28         92C      92C       38    1258     0
+		text29          8E       8E       38     11C     0
+		text30         801      801       17    1002     0
+		text31         BC0      BC0       9C    1780     0
+		text32         22B      22B      5D3     456     0
+		text33        15EE     15EE        F    2BDC     0
+		text34         818      818       35    1030     0
+		text35        165F     165F       19    2CBE     0
+		text36        17CC     17CC       34    2F98     0
+		text37          C6       C6       A8     18C     0
+		text38         A5A      A5A       6C    14B4     0
+
+C:\HT-PIC\LIB\pic422-c.lib
+clrbit0.obj     init            48       48        4       8     0
+powerup.obj     powerup          0        0        4       0     0
+stringtab.obj   stringtab       7B       7B       12       8     0
+		code_ptr        4C       4C        2      20     1
+bmul.obj        temp            70       70        2      70     1
+		text          15D4     15D4        C    2BA8     0
+wmul.obj        temp            70       70        6      70     1
+		text          161F     161F       15    2C3E     0
+clrbank0.obj    init            4C       4C        4       8     0
+cpybank0.obj    init            50       50        9       8     0
+clrbank2.obj    init            59       59        5       8     0
+clrbank3.obj    init            5E       5E        5       8     0
+clr.obj         clrtext         67       67        7       8     0
+copy.obj        temp            70       70        1      70     1
+		clrtext         6E       6E        D       8     0
+btemp0.obj      temp            70       70        1      70     1
+btemp1.obj      temp            70       70        2      70     1
+btemp2.obj      temp            70       70        3      70     1
+btemp3.obj      temp            70       70        4      70     1
+btemp4.obj      temp            70       70        5      70     1
+btemp5.obj      temp            70       70        6      70     1
+codeptr.obj     
+
+COMMON          rbss_0          3A       3A        D      20     1
+
+TOTAL		Name          Link     Load   Length
+	CLASS	BANK0    
+		rbss_0          21       21       26
+		rdata_0         47       47        2
+		temp            70       70        6
+		rbit_0         100       20        2
+		intsave         49       49        3
+		code_ptr        4C       4C        2
+
+	CLASS	BANK1    
+
+	CLASS	BANK2    
+		rbss_2         110      110       4E
+
+	CLASS	BANK3    
+		rbss_3         190      190       38
+
+	CLASS	COMBANK  
+		intsave_0       76       76        1
+
+	CLASS	CODE     
+		powerup          0        0        4
+		idata_0        7FE      7FE        2
+		intcode          D        D       32
+		intret          3F       3F        9
+		intentry         4        4        9
+		init            48       48       1B
+		end_init        63       63        4
+		clrtext         67       67       14
+		text0          B3F      B3F       81
+		text1          9FA      9FA       60
+		text2         173E     173E       2B
+		text3         16AB     16AB       20
+		text4         16CB     16CB       22
+		text5         1634     1634       15
+		text6         1799     1799       33
+		text7         15C6     15C6        3
+		text9         1691     1691       1A
+		text10        1678     1678       19
+		text11        15E0     15E0        E
+		text12        15C9     15C9        B
+		text13        160D     160D       12
+		text14        1769     1769       30
+		text15        1649     1649       16
+		text16         9AE      9AE       4C
+		text17         AC6      AC6       79
+		text18        15FD     15FD       10
+		text19         964      964       4A
+		text20         C5C      C5C      3A4
+		text21         16E      16E       BD
+		text22        1714     1714       2A
+		text23         84D      84D       37
+		text24        16ED     16ED       27
+		text25         884      884       38
+		text26         8BC      8BC       38
+		text27         8F4      8F4       38
+		text28         92C      92C       38
+		text29          8E       8E       38
+		text30         801      801       17
+		text31         BC0      BC0       9C
+		text32         22B      22B      5D3
+		text33        15EE     15EE        F
+		text34         818      818       35
+		text35        165F     165F       19
+		text36        17CC     17CC       34
+		text37          C6       C6       A8
+		text38         A5A      A5A       6C
+		text          15D4     15D4        C
+		text          161F     161F       15
+
+	CLASS	CONST    
+		const1        1049     1049        7
+		const2        1042     1042        7
+		const3        1018     1018        9
+		const4        1000     1000        E
+		const5        100E     100E        A
+		const6        102A     102A        8
+		const7        1021     1021        9
+		const8        103A     103A        8
+		const9        1032     1032        8
+
+	CLASS	STRING   
+
+	CLASS	ENTRY    
+		stringtab       7B       7B       12
+
+
+
+SEGMENTS	Name		Load	Length	 Top	Selector    Space Class
+
+		powerup         000000	000004	000004	       0       0  CODE  
+		intentry        000004	000089	00008D	       8       0  CODE  
+		rbit_0          000020	00002E	00004E	      20       1  BANK0 
+		temp            000070	000007	000077	      70       1  COMBAN
+		rbit_2          000110	00004E	00015E	     110       1  BANK2 
+		text29          00008E	000038	0000C6	     11C       0  CODE  
+		text37          0000C6	0000A8	00016E	     18C       0  CODE  
+		rbit_3          000190	000038	0001C8	     190       1  BANK3 
+		text21          00016E	0000BD	00022B	     2DC       0  CODE  
+		text32          00022B	0005D3	0007FE	     456       0  CODE  
+		idata_0         0007FE	000002	000800	     FFC       0  CODE  
+		text30          000801	000017	000818	    1002       0  CODE  
+		text34          000818	000035	00084D	    1030       0  CODE  
+		text23          00084D	000037	000884	    109A       0  CODE  
+		text25          000884	000038	0008BC	    1108       0  CODE  
+		text26          0008BC	000038	0008F4	    1178       0  CODE  
+		text27          0008F4	000038	00092C	    11E8       0  CODE  
+		text28          00092C	000038	000964	    1258       0  CODE  
+		text19          000964	00004A	0009AE	    12C8       0  CODE  
+		text16          0009AE	00004C	0009FA	    135C       0  CODE  
+		text1           0009FA	000060	000A5A	    13F4       0  CODE  
+		text38          000A5A	00006C	000AC6	    14B4       0  CODE  
+		text17          000AC6	000079	000B3F	    158C       0  CODE  
+		text0           000B3F	000081	000BC0	    167E       0  CODE  
+		text31          000BC0	00009C	000C5C	    1780       0  CODE  
+		text20          000C5C	0003A4	001000	    18B8       0  CODE  
+		const4          001000	000050	001050	    2000       0  CONST 
+		text7           0015C6	000003	0015C9	    2B8C       0  CODE  
+		text12          0015C9	00000B	0015D4	    2B92       0  CODE  
+		text            0015D4	00000C	0015E0	    2BA8       0  CODE  
+		text11          0015E0	00000E	0015EE	    2BC0       0  CODE  
+		text33          0015EE	00000F	0015FD	    2BDC       0  CODE  
+		text18          0015FD	000010	00160D	    2BFA       0  CODE  
+		text13          00160D	000012	00161F	    2C1A       0  CODE  
+		text            00161F	000015	001634	    2C3E       0  CODE  
+		text5           001634	000015	001649	    2C68       0  CODE  
+		text15          001649	000016	00165F	    2C92       0  CODE  
+		text35          00165F	000019	001678	    2CBE       0  CODE  
+		text10          001678	000019	001691	    2CF0       0  CODE  
+		text9           001691	00001A	0016AB	    2D22       0  CODE  
+		text3           0016AB	000020	0016CB	    2D56       0  CODE  
+		text4           0016CB	000022	0016ED	    2D96       0  CODE  
+		text24          0016ED	000027	001714	    2DDA       0  CODE  
+		text22          001714	00002A	00173E	    2E28       0  CODE  
+		text2           00173E	00002B	001769	    2E7C       0  CODE  
+		text14          001769	000030	001799	    2ED2       0  CODE  
+		text6           001799	000033	0017CC	    2F32       0  CODE  
+		text36          0017CC	000034	001800	    2F98       0  CODE  
+
+
+UNUSED ADDRESS RANGES
+
+	BANK0            004E-006F
+	                 0077-007F
+	BANK1            00A0-00EF
+	BANK2            015E-016F
+	BANK3            01C8-01EF
+	CODE             008D-008D
+	                 0800-0800
+	                 1050-15C5
+	                 1800-1FFF
+	COMBANK          0077-007F
+	CONST            008D-008D
+	                 0800-0800
+	                 1050-15C5
+	                 1800-1FFF
+
+                                  Symbol Table
+
+?_Q_read                   rbss_0      0042
+?_Q_write                  rbss_0      003E
+?_nextcoil                 rbss_0      0042
+?_printnum                 rbss_0      003E
+?_printnum_4d              rbss_0      003E
+?_prints                   rbss_0      0043
+?a_Init_homemotors         rbss_0      003A
+?a_Init_motors             rbss_0      003A
+?a_Q_checkempty            rbss_0      0042
+?a_Q_read                  rbss_0      0043
+?a_Q_write                 rbss_0      003F
+?a_WDJ_protocol_handler    rbss_0      003A
+?a_checkforbytes_RXQ       rbss_0      003E
+?a_duplicator_statemachine rbss_0      003A
+?a_error_home              rbss_0      003A
+?a_error_max               rbss_0      0042
+?a_error_min               rbss_0      0042
+?a_handle_steppermotors    rbss_0      003A
+?a_motoroff                rbss_0      0042
+?a_nextcoil                rbss_0      0043
+?a_ok_home                 rbss_0      0042
+?a_output_motor            rbss_0      0042
+?a_printc                  rbss_0      0046
+?a_printnum                rbss_0      0040
+?a_printnum_4d             rbss_0      0040
+?a_prints                  rbss_0      0045
+?a_readnoinc_RXQ           rbss_0      003E
+_E_HOME_msg                const7      1022
+_E_MAX_msg                 const8      103B
+_E_MIN_msg                 const9      1033
+_Init                      text9       1691
+_Init_cmdQ                 text34      0818
+_Init_comms                text10      1678
+_Init_homemotors           text36      17CC
+_Init_hwtimers             text12      15C9
+_Init_motors               text21      016E
+_Init_swtimers             text11      15E0
+_Init_world                text35      165F
+_MOTORMAXPOSITION          const1      104A
+_MOTORMINPOSITION          const2      1043
+_OK_CD_msg                 const6      102B
+_OK_HOME_msg               const5      100F
+_Q_checkempty              text2       173E
+_Q_read                    text0       0B3F
+_Q_write                   text1       09FA
+_READY_msg                 const4      1001
+_RXQ                       rbss_0      002D
+_RXQ_empty                 text18      15FD
+_WDJ_protocol_handler      text20      0C5C
+__Brbit_0                  rbit_0      0020
+__Brbit_1                  rbit_1      00A0
+__Brbit_2                  rbit_2      0110
+__Brbit_3                  rbit_3      0190
+__Hclrtext                 clrtext     007B
+__Hcode                    code        01C8
+__Hcode_ptr                code_ptr    004E
+__Hcommon_ram              common_ram  01C8
+__Hconfig                  config      2007
+__Hend_init                end_init    0067
+__Hfloat_text0             float_text0 008D
+__Hfloat_text1             float_text1 008D
+__Hfloat_text2             float_text2 008D
+__Hfloat_text3             float_text3 008D
+__Hfloat_text4             float_text4 008D
+__Hidata_0                 idata_0     0800
+__Hidata_1                 idata_1     008D
+__Hidata_2                 idata_2     008D
+__Hidata_3                 idata_3     008D
+__Hidloc                   idloc       2000
+__Hinit                    init        0063
+__Hintcode                 intcode     003F
+__Hintentry                intentry    000D
+__Hintret                  intret      0048
+__Hintsave                 intsave     01C8
+__Hintsave_0               intsave_0   0077
+__Hintsave_1               intsave_1   01C8
+__Hintsave_2               intsave_2   01C8
+__Hintsave_3               intsave_3   01C8
+__Hnvram                   nvram       0049
+__Hnvram_1                 nvram_1     00A0
+__Hnvram_2                 nvram_2     015E
+__Hnvram_3                 nvram_3     01C8
+__Hpowerup                 powerup     0004
+__Hrbit_0                  rbit_0      0102
+__Hrbit_1                  rbit_1      0500
+__Hrbit_2                  rbit_2      0880
+__Hrbit_3                  rbit_3      0C80
+__Hrbss_0                  rbss_0      0047
+__Hrbss_1                  rbss_1      00A0
+__Hrbss_2                  rbss_2      015E
+__Hrbss_3                  rbss_3      01C8
+__Hrdata_0                 rdata_0     0049
+__Hrdata_1                 rdata_1     00A0
+__Hrdata_2                 rdata_2     015E
+__Hrdata_3                 rdata_3     01C8
+__Hstrings                 strings     008D
+__Hstringtable             stringtable 008D
+__Hstruct                  struct      004E
+__Htemp                    temp        0076
+__Htext                    text        01C8
+__Hvectors                 vectors     008D
+__Lclrtext                 clrtext     0067
+__Lcode                    code        01C8
+__Lcode_ptr                code_ptr    004C
+__Lcommon_ram              common_ram  01C8
+__Lconfig                  config      2007
+__Lend_init                end_init    0063
+__Lfloat_text0             float_text0 008D
+__Lfloat_text1             float_text1 008D
+__Lfloat_text2             float_text2 008D
+__Lfloat_text3             float_text3 008D
+__Lfloat_text4             float_text4 008D
+__Lidata_0                 idata_0     07FE
+__Lidata_1                 idata_1     008D
+__Lidata_2                 idata_2     008D
+__Lidata_3                 idata_3     008D
+__Lidloc                   idloc       2000
+__Linit                    init        0048
+__Lintcode                 intcode     000D
+__Lintentry                intentry    0004
+__Lintret                  intret      003F
+__Lintsave                 intsave     01C8
+__Lintsave_0               intsave_0   0076
+__Lintsave_1               intsave_1   01C8
+__Lintsave_2               intsave_2   01C8
+__Lintsave_3               intsave_3   01C8
+__Lnvram                   nvram       0049
+__Lnvram_1                 nvram_1     00A0
+__Lnvram_2                 nvram_2     015E
+__Lnvram_3                 nvram_3     01C8
+__Lpowerup                 powerup     0000
+__Lrbit_0                  rbit_0      0100
+__Lrbit_1                  rbit_1      0500
+__Lrbit_2                  rbit_2      0880
+__Lrbit_3                  rbit_3      0C80
+__Lrbss_0                  rbss_0      0021
+__Lrbss_1                  rbss_1      00A0
+__Lrbss_2                  rbss_2      0110
+__Lrbss_3                  rbss_3      0190
+__Lrdata_0                 rdata_0     0047
+__Lrdata_1                 rdata_1     00A0
+__Lrdata_2                 rdata_2     015E
+__Lrdata_3                 rdata_3     01C8
+__Lstrings                 strings     008D
+__Lstringtable             stringtable 007B
+__Lstruct                  struct      004E
+__Ltemp                    temp        0070
+__Ltext                    text        01C8
+__Lvectors                 vectors     008D
+__S0                       (abs)       1800
+__S1                       (abs)       01C8
+_checkforbytes_RXQ         text19      0964
+_coilpattern               const3      1019
+_dup                       rbss_3      0190
+_duplicator_statemachine   text37      00C6
+_error_cd                  text28      092C
+_error_home                text27      08F4
+_error_max                 text25      0884
+_error_min                 text26      08BC
+_exit                      init        0048
+_gCmdQ                     rbss_3      01A7
+_gHalfstep                 rdata_0     0047
+_gHomeswitch               rbss_0      002A
+_gHwtimer0_cnt             rbss_0      0021
+_gLedcnt                   rbss_0      0022
+_gMotorselected            rbss_0      0023
+_gSwtimer                  rbss_3      0195
+_gTerminal                 rdata_0     0048
+_gWorld                    rbss_3      019B
+_handle_RX                 text5       1634
+_handle_TMR0               text6       1799
+_handle_TMR2               text7       15C6
+_handle_homeswitches       text24      16ED
+_handle_led                text33      15EE
+_handle_steppermotors      text32      022B
+_i                         rbss_0      0025
+_main                      text38      0A5A
+_motor                     rbss_2      0110
+_motoroff                  text22      1714
+_newline                   text15      1649
+_nextcoil                  text31      0BC0
+_ok_cd                     text30      0801
+_ok_home                   text29      008E
+_output_motor              text23      084D
+_printc                    text13      160D
+_printflag                 rbss_0      0024
+_printnum                  text16      09AE
+_printnum_4d               text17      0AC6
+_prints                    text14      1769
+_read_RXQ                  text3       16AB
+_readnoinc_RXQ             text4       16CB
+abmul                      text        15D4
+abmul_t                    text        15D5
+awmul                      text        161F
+clear_bank0                init        004C
+clear_bank2                init        0059
+clear_bank3                init        005E
+clear_bit0                 init        0048
+clear_ram                  clrtext     006A
+code_ptr                   code_ptr    004C
+copy_bank0                 init        0050
+copy_data                  clrtext     006E
+int_entry                  intentry    0004
+int_func                   intcode     000D
+int_restore                intret      0043
+intlevel0                  intentry    0004
+intlevel1                  intentry    0004
+lbmul                      text        15D4
+lbmul_t                    text        15D5
+lwmul                      text        161F
+powerup                    powerup     0000
+start                      init        0048
+string_indir               stringtable 007C
+string_table               stringtable 007B
+used_btemp0                (abs)       0001
+used_btemp1                (abs)       0001
+used_btemp2                (abs)       0001
+used_btemp3                (abs)       0001
+used_btemp4                (abs)       0001
+used_btemp5                (abs)       0001
+used_code_ptr              (abs)       0001

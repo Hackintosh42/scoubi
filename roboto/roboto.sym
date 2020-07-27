@@ -1,0 +1,285 @@
+__Hrdata_0 49 0 BANK0
+__Lrdata_0 47 0 BANK0
+_printflag 24 0 BANK0
+used_btemp4 1 0
+?a_checkforbytes_RXQ 3E 0 BANK0
+_i 25 0 BANK0
+__Hidata_1 8D 0 CODE
+__Lidata_1 8D 0 CODE
+__Hrdata_1 A0 0 BANK1
+__Lrdata_1 A0 0 BANK1
+string_table 7B 0 ENTRY
+?a_WDJ_protocol_handler 3A 0 BANK0
+__Hidata_2 8D 0 CODE
+__Lidata_2 8D 0 CODE
+_gMotorselected 23 0 BANK0
+__S0 1800 0
+__S1 1C8 0
+__Hrdata_2 15E 0 BANK2
+__Lrdata_2 15E 0 BANK2
+_RXQ 2D 0 BANK0
+used_btemp5 1 0
+_handle_RX 1634 0 CODE
+__Hidata_3 8D 0 CODE
+__Lidata_3 8D 0 CODE
+__Hrdata_3 1C8 0 BANK3
+__Lrdata_3 1C8 0 BANK3
+__Hnvram_1 A0 0 BANK1
+__Lnvram_1 A0 0 BANK1
+_dup 190 0 BANK3
+?a_printnum_4d 40 0 BANK0
+_readnoinc_RXQ 16CB 0 CODE
+_WDJ_protocol_handler C5C 0 CODE
+__Hend_init 67 0 CODE
+__Lend_init 63 0 CODE
+?a_ok_home 42 0 BANK0
+_coilpattern 1019 0 CONST
+_OK_CD_msg 102B 0 CONST
+_Init_motors 16E 0 CODE
+__Hnvram_2 15E 0 BANK2
+__Lnvram_2 15E 0 BANK2
+_E_MIN_msg 1033 0 CONST
+_READY_msg 1001 0 CONST
+_E_MAX_msg 103B 0 CONST
+__Hnvram_3 1C8 0 BANK3
+__Lnvram_3 1C8 0 BANK3
+?a_error_home 3A 0 BANK0
+_gTerminal 48 0 BANK0
+_handle_TMR2 15C6 0 CODE
+?a_Q_checkempty 42 0 BANK0
+_main A5A 0 CODE
+_Init 1691 0 CODE
+abmul 15D4 0 CODE
+lbmul 15D4 0 CODE
+awmul 161F 0 CODE
+lwmul 161F 0 CODE
+_exit 48 0 CODE
+start 48 0 CODE
+?a_printnum 40 0 BANK0
+__Hfloat_text1 8D 0 CODE
+_Init_comms 1678 0 CODE
+__Lfloat_text1 8D 0 CODE
+__Hintsave 1C8 0
+__Lintsave 1C8 0
+copy_bank0 50 0 CODE
+?a_Q_write 3F 0 BANK0
+_Init_cmdQ 818 0 CODE
+_E_HOME_msg 1022 0 CONST
+?a_motoroff 42 0 BANK0
+_printnum_4d AC6 0 CODE
+?a_error_max 42 0 BANK0
+_error_home 8F4 0 CODE
+__Hintsave_0 77 0 COMBANK
+__Lintsave_0 76 0 COMBANK
+_Init_homemotors 17CC 0 CODE
+?_nextcoil 42 0 BANK0
+__Hcode_ptr 4E 0 BANK0
+__Lcode_ptr 4C 0 BANK0
+__Hfloat_text3 8D 0 CODE
+__Lfloat_text3 8D 0 CODE
+__Hstringtable 8D 0 ENTRY
+__Lstringtable 7B 0 ENTRY
+_Init_world 165F 0 CODE
+clear_bit0 48 0 CODE
+_error_min 8BC 0 CODE
+_gCmdQ 1A7 0 BANK3
+used_code_ptr 1 0
+?a_Q_read 43 0 BANK0
+_ok_cd 801 0 CODE
+_error_cd 92C 0 CODE
+__Hintsave_1 1C8 0
+__Lintsave_1 1C8 0
+_gHalfstep 47 0 BANK0
+?a_error_min 42 0 BANK0
+_motor 110 0 BANK2
+clear_bank0 4C 0 CODE
+copy_data 6E 0 CODE
+?a_readnoinc_RXQ 3E 0 BANK0
+?a_Init_motors 3A 0 BANK0
+__Hconfig 2007 0 CODE
+_OK_HOME_msg 100F 0 CONST
+__Lconfig 2007 0 CODE
+__Hstrings 8D 0 STRING
+__Lstrings 8D 0 STRING
+?_printnum_4d 3E 0 BANK0
+__Brbit_0 20 FFFFFF20 BANK0
+__Hrbit_0 102 FFFFFF20 BANK0
+__Lrbit_0 100 FFFFFF20 BANK0
+_motoroff 1714 0 CODE
+_error_max 884 0 CODE
+__Brbit_1 A0 FFFFFBA0 BANK1
+?a_duplicator_statemachine 3A 0 BANK0
+__Hrbss_0 47 0 BANK0
+__Hrbit_1 500 FFFFFBA0 BANK1
+__Lrbss_0 21 0 BANK0
+__Lrbit_1 500 FFFFFBA0 BANK1
+__Hintsave_2 1C8 0
+__Lintsave_2 1C8 0
+__Brbit_2 110 FFFFF890 BANK2
+__Hrbss_1 A0 0 BANK1
+__Hrbit_2 880 FFFFF890 BANK2
+__Lrbss_1 A0 0 BANK1
+__Lrbit_2 880 FFFFF890 BANK2
+_MOTORMINPOSITION 1043 0 CONST
+?a_printc 46 0 BANK0
+clear_ram 6A 0 CODE
+__Brbit_3 190 FFFFF510 BANK3
+__Hrbss_2 15E 0 BANK2
+__Hrbit_3 C80 FFFFF510 BANK3
+__Lrbss_2 110 0 BANK2
+__Lrbit_3 C80 FFFFF510 BANK3
+?_printnum 3E 0 BANK0
+int_restore 43 0 CODE
+__Hrbss_3 1C8 0 BANK3
+__Lrbss_3 190 0 BANK3
+clear_bank2 59 0 CODE
+?_Q_write 3E 0 BANK0
+_handle_homeswitches 16ED 0 CODE
+intlevel0 4 0 CODE
+_duplicator_statemachine C6 0 CODE
+?a_handle_steppermotors 3A 0 BANK0
+intlevel1 4 0 CODE
+_nextcoil BC0 0 CODE
+?a_Init_homemotors 3A 0 BANK0
+?a_nextcoil 43 0 BANK0
+_gHomeswitch 2A 0 BANK0
+clear_bank3 5E 0 CODE
+?_Q_read 42 0 BANK0
+_MOTORMAXPOSITION 104A 0 CONST
+__Hfloat_text0 8D 0 CODE
+__Lfloat_text0 8D 0 CODE
+__Hpowerup 4 0 CODE
+__Lpowerup 0 0 CODE
+__Hintsave_3 1C8 0
+_output_motor 84D 0 CODE
+__Lintsave_3 1C8 0
+_gSwtimer 195 0 BANK3
+__Hvectors 8D 0 CODE
+used_btemp0 1 0
+__Lvectors 8D 0 CODE
+__Hidloc 2000 0 CODE
+__Lidloc 2000 0 CODE
+_Init_hwtimers 15C9 0 CODE
+_ok_home 8E 0 CODE
+int_func D 0 CODE
+_newline 1649 0 CODE
+__Hintret 48 0 CODE
+__Hfloat_text2 8D 0 CODE
+__Lintret 3F 0 CODE
+__Lfloat_text2 8D 0 CODE
+__Hstruct 4E 0 BANK0
+__Lstruct 4E 0 BANK0
+_Q_checkempty 173E 0 CODE
+_Init_swtimers 15E0 0 CODE
+_printnum 9AE 0 CODE
+string_indir 7C 0 ENTRY
+_Q_write 9FA 0 CODE
+used_btemp1 1 0
+__Hnvram 49 0 BANK0
+__Lnvram 49 0 BANK0
+_handle_led 15EE 0 CODE
+__Hclrtext 7B 0 CODE
+__Lclrtext 67 0 CODE
+__Hcommon_ram 1C8 0
+__Lcommon_ram 1C8 0
+_Q_read B3F 0 CODE
+__Hcode 1C8 0
+__Lcode 1C8 0
+?a_output_motor 42 0 BANK0
+_gLedcnt 22 0 BANK0
+?a_prints 45 0 BANK0
+used_btemp2 1 0
+_gWorld 19B 0 BANK3
+__Hfloat_text4 8D 0 CODE
+__Lfloat_text4 8D 0 CODE
+_gHwtimer0_cnt 21 0 BANK0
+_printc 160D 0 CODE
+_read_RXQ 16AB 0 CODE
+code_ptr 4C 0 BANK0
+_handle_TMR0 1799 0 CODE
+__Htemp 76 0 BANK0
+__Ltemp 70 0 BANK0
+abmul_t 15D5 0 CODE
+lbmul_t 15D5 0 CODE
+__Hinit 63 0 CODE
+__Linit 48 0 CODE
+?_prints 43 0 BANK0
+_RXQ_empty 15FD 0 CODE
+_handle_steppermotors 22B 0 CODE
+used_btemp3 1 0
+powerup 0 0 CODE
+__Htext 1C8 0
+__Ltext 1C8 0
+_checkforbytes_RXQ 964 0 CODE
+_prints 1769 0 CODE
+__Hintentry D 0 CODE
+__Lintentry 4 0 CODE
+int_entry 4 0 CODE
+__Hintcode 3F 0 CODE
+__Lintcode D 0 CODE
+__Hidata_0 800 0 CODE
+__Lidata_0 7FE 0 CODE
+%segments
+powerup 0 7 CODE
+intentry 8 119 CODE
+rbit_0 100 12D BANK0
+idata_0 FFC FFF CODE
+rbit_2 880 8CD BANK2
+rbit_3 C80 CB7 BANK3
+temp 70 76 COMBANK
+text32 456 FFB CODE
+text20 18B8 1FFF CODE
+text21 2DC 455 CODE
+text37 18C 2DB CODE
+text31 1780 18B7 CODE
+text0 167E 177F CODE
+text17 158C 167D CODE
+text38 14B4 158B CODE
+text1 13F4 14B3 CODE
+text16 135C 13F3 CODE
+text19 12C8 135B CODE
+text29 11C 18B CODE
+text28 1258 12C7 CODE
+text27 11E8 1257 CODE
+text26 1178 11E7 CODE
+text25 1108 1177 CODE
+text23 109A 1107 CODE
+text34 1030 1099 CODE
+text36 2F98 2FFF CODE
+text6 2F32 2F97 CODE
+text14 2ED2 2F31 CODE
+text2 2E7C 2ED1 CODE
+text22 2E28 2E7B CODE
+text24 2DDA 2E27 CODE
+text4 2D96 2DD9 CODE
+text3 2D56 2D95 CODE
+text9 2D22 2D55 CODE
+text10 2CF0 2D21 CODE
+text35 2CBE 2CEF CODE
+text30 1002 102F CODE
+text15 2C92 2CBD CODE
+text5 2C68 2C91 CODE
+text 2C3E 2C67 CODE
+text13 2C1A 2C3D CODE
+text18 2BFA 2C19 CODE
+text33 2BDC 2BF9 CODE
+text11 2BC0 2BDB CODE
+const4 2000 209F CONST
+text 2BA8 2BBF CODE
+text12 2B92 2BA7 CODE
+text7 2B8C 2B91 CODE
+%locals
+C:\Roboto\ROBOTO.OBJ
+_isr 8D 0 CODE
+pc 2
+pclath A
+fsr 4
+F650 27 0 BANK0
+status 3
+saved_fsr 4A 0 BANK0
+saved_w 76 0 COMBANK
+saved_pclath 4B 0 BANK0
+saved_status 49 0 BANK0
+_gStepmotors 100 FFFFFF20 BANK0
+btemp 70 0 BANK0
+_gStopmotors 101 FFFFFF20 BANK0

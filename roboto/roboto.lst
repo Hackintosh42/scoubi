@@ -1,0 +1,1209 @@
+     1: #include <pic.h>
+     2: #include "roboto.h"
+     3: 
+     4: const u8 READY_msg[]="ROBOTO READY";
+     5: const u8 OK_HOME_msg[]="OK_HOME-";
+     6: const u8 OK_CD_msg[]="OK_CD-";
+     7: const u8 E_HOME_msg[]="E_HOME-";
+     8: const u8 E_MAX_msg[]="E_MAX-";
+     9: const u8 E_MIN_msg[]="E_MIN-";
+    10: 
+    11: 
+    12: // Global variable declaration
+    13: bank2 struct sMotor motor[NUMBEROFMOTORS];
+    14: bank3 struct sCmdQ gCmdQ[NUMBEROFMOTORS];
+    15: bank3 struct sSwtimer gSwtimer[2];
+    16: bank3 struct sWorld gWorld;
+    17: bank3 struct sDup dup;
+    18: 
+    19: struct sCharQ RXQ;   // The serial character Q
+    20: int i;
+    21: u8 gMotorselected =0;
+    22: static bit gStepmotors =0;
+    23: static bit gStopmotors =0;
+    24: u8 gHalfstep = 1;
+    25: u8 gTerminal = 1;
+    26: u8 printflag =0;
+    27: u8 gHwtimer0_cnt =0;
+    28: u8 gHomeswitch[3];
+    29: u8 gLedcnt;
+    30: //--------------------------------------------
+    31: // Function Prototypes
+    32: //--------------------------------------------
+    33: 
+    34: void Init_world(void);
+    35: void nextcoil(u8 i,u8 dir);
+    36: u8 Q_read(u8 n, struct sCmd *cmd);
+    37: void Q_write(u8 n, struct sCmd *cmd);
+    38: u8      Q_checkempty(u8 n);
+    39: 
+    40: char read_RXQ(void);
+    41: char readnoinc_RXQ(void);
+    42: void handle_RX(void);
+    43: void handle_TMR0();
+    44: void handle_steppermotors(void);
+    45: void handle_led(void);
+    46: void Init(void);
+    47: void Init_comms(void);
+    48: void Init_hwtimers(void);
+    49: void Init_swtimers(void);
+    50: 
+    51: void printc(u8 c);
+    52: void prints(const u8 *c);
+    53: void printnum(int n);
+    54: void printnum_4d(int n);
+    55: u8 RXQ_empty(void);
+    56: u8 checkforbytes_RXQ(u8 cnt);
+    57: void WDJ_protocol_handler(void);
+    58: void handle_homeswitches(void);
+    59: 
+    60: void duplicator_statemachine(void);
+    61: 
+    62: 
+    63: void error_max(u8 i);
+    64: void error_min(u8 i);
+    65: void error_home(u8 i);
+    66: void error_cd(void);
+    67: void ok_home(u8 i);
+    68: void ok_cd(void);
+    69: 
+    70: 
+    71: 
+    72: 
+    73: 
+    74: //--------------------------------------------
+    75: // Returns a pointer to the next structure
+    76: // in the ring buffer Q
+    77: //--------------------------------------------
+    78: u8 Q_read(u8 n, struct sCmd *cmd)
+    79: {
+    80:         if (gCmdQ[n].rdptr == gCmdQ[n].wrptr)
+    81:         {       
+    82:                 return(NULL);   
+    83:         }
+    84:         else    
+    85:         {
+    86:                 if ((++gCmdQ[n].rdptr) > (CMDQ_SIZE)-1)
+    87:                         gCmdQ[n].rdptr = 0;
+    88:                 *cmd = gCmdQ[n].ringbuf[gCmdQ[n].rdptr];                                
+    89:                 return(1);
+    90:         }
+    91: }
+    92: 
+    93: //--------------------------------------------
+    94: // Writes to the ring buffer Q
+    95: //--------------------------------------------
+    96: void Q_write(u8 n, struct sCmd *cmd)
+    97: {
+    98:     if(++gCmdQ[n].wrptr > CMDQ_SIZE-1) 
+    99:         gCmdQ[n].wrptr = 0;
+   100: 
+   101:     gCmdQ[n].ringbuf[gCmdQ[n].wrptr] =*cmd;     
+   102: }
+   103: 
+   104: //--------------------------------------------
+   105: // Checks if the ring buffer Q is empty
+   106: //--------------------------------------------
+   107: u8      Q_checkempty(u8 n)
+   108: {
+   109:         if(gCmdQ[n].rdptr == gCmdQ[n].wrptr)
+   110:                 return(1);
+   111:         else
+   112:                 return(0);
+   113: }       
+   114: 
+   115: 
+   116: //--------------------------------------------
+   117: // Returns the Character and increments 
+   118: // the read ptr
+   119: //--------------------------------------------
+   120: u8 read_RXQ(void)
+   121: {
+   122:         if (RXQ.rdptr == RXQ.wrptr)
+   123:                 return(NULL);   
+   124:         else    
+   125:         {
+   126:                 if ((++RXQ.rdptr) > RXQSIZE-1)
+   127:                         RXQ.rdptr = 0;
+   128:                 return(RXQ.buf[RXQ.rdptr]);
+   129:         }
+   130: }
+   131: 
+   132: //--------------------------------------------
+   133: // Returns the Character but doesn't increment 
+   134: // the read ptr
+   135: //--------------------------------------------
+   136: char readnoinc_RXQ(void)
+   137: {
+   138: u8 tmpptr;
+   139: 
+   140:         if (RXQ.rdptr == RXQ.wrptr)
+   141:                 return(NULL);   
+   142:         else    
+   143:         {
+   144:                 tmpptr = RXQ.rdptr;     
+   145:                 if ((++tmpptr) > RXQSIZE-1)
+   146:                         tmpptr = 0;
+   147:                 return(RXQ.buf[tmpptr]);
+   148:         }
+   149: }
+   150: 
+   151: 
+   152: //-------------------------------------------
+   153: // Interrupt Handling Routines
+   154: //-------------------------------------------
+   155: 
+   156: void handle_RX(void)
+   157: {
+   158:         // THis is a ring buffer, check for wraparound
+   159:     if(++RXQ.wrptr > RXQSIZE-1) 
+   160:         RXQ.wrptr = 0;
+   161:         
+   162:     RXQ.buf[RXQ.wrptr]=RCREG;
+   163: }
+   164: 
+   165: void handle_TMR0()
+   166: {
+   167:         if(++gHwtimer0_cnt == 10)
+   168:         {       
+   169:                 gHwtimer0_cnt = 0;
+   170:                 // switch the gripper motor off
+   171:                 if(gSwtimer[0].enable)
+   172:                         if(++gSwtimer[0].cnt > gSwtimer[0].cmp)
+   173:                         {               
+   174:                                 GRIPPER = 0;            
+   175:                                 gSwtimer[0].enable = 0;
+   176:                         }
+   177:                 if(gSwtimer[1].enable)
+   178:                         if(++gSwtimer[1].cnt > gSwtimer[1].cmp)
+   179:                         {               
+   180:                                 gSwtimer[1].cnt = 0;
+   181:                                 gStepmotors = 1;
+   182:                         }                       
+   183:         }
+   184: }
+   185: void handle_TMR2()
+   186: {
+   187: }
+   188: 
+   189: 
+   190: 
+   191: static void interrupt isr(void)
+   192: {
+   193:   
+   194:   if(RBIF)      // There was a PortB change interrupt
+   195:   {
+   196:     RBIF=0;     // Clear the interrupt flag
+   197:     RBIE=1;     // Enable interrupt again
+   198:   }
+   199: 
+   200:   if(INTF)      // PortB external interrupt pin
+   201:   {
+   202:     INTF=0;
+   203:   }
+   204: 
+   205:   if(T0IF)      // Timer 0 Interrupt Flag
+   206:   {
+   207:     handle_TMR0();
+   208:     T0IF=0;     // Clear the interrupt flag
+   209:   }
+   210:   if(TMR2IF)      // Timer 2 Interrupt Flag
+   211:   {
+   212:     handle_TMR2();
+   213:     TMR2IF=0;     // Clear the interrupt flag
+   214:   }
+   215:     
+   216:   if(RCIF)              // Recieve interrupt flag
+   217:   {
+   218:     RCIE=0; // Disable Receive Interrupt
+   219:     handle_RX();
+   220:         RCIE=1; // Enable Receive Interrupt    
+   221:   }
+   222: }
+   223: 
+   224: //--------------------------------------------
+   225: // void Init(void)
+   226: //   Initialize the CPU and development board
+   227: //--------------------------------------------
+   228: void Init(void)
+   229: {
+   230:   // Disable the dog when programming
+   231: 
+   232:   //  (1 is input, 0 is output)
+   233:   TRISA=0b00001111;  //  (ONLY 6 PINS)
+   234:   TRISB=0b11111111;
+   235:   TRISC=0b10100000;
+   236:   TRISD=0b00000000;  // motors are connected here
+   237:   TRISE=0b00000000;
+   238: 
+   239:   PORTD = 0x0;
+   240:   RBPU=1;    // 0 = Enable PORTB pullups
+   241:   ADCON1=0x07;   // NO a/d'S
+   242:   RBIF=0;    // Clear Port B interrupt flag
+   243:   T0IF=0;    // Clear timer0 interrupt flag  
+   244:   T0IE=0;    // Timer interrupt disable
+   245:   RBIE=1;    // RB Port Change interrupt enable   
+   246:   
+   247:   // And Finally
+   248:   GIE=1;        // Enable global interrupts
+   249:   LED0=1;               // Show that board is initialized
+   250: }
+   251: 
+   252: //--------------------------------------------
+   253: // void Init_comms(void)
+   254: //   Initialize the RS232 Serial Comms
+   255: //--------------------------------------------
+   256: void Init_comms(void)
+   257: {
+   258:         RXQ.rdptr = 0;
+   259:         RXQ.wrptr = 0;
+   260:         RXQ.forceread = 0;
+   261:         RXQ.waiting = 0;
+   262:         RXQ.timeout = 0;
+   263:         
+   264:         BRGH=1; // High BaudRate
+   265:         SPBRG=SERIAL_SPEED;
+   266:         SPEN=1; // Serial Port Enable
+   267:         TXEN=1; // Enable TX
+   268:         SYNC = 0;  // Set to async port
+   269:         CREN = 1;  // Continuous RX enable
+   270: 
+   271:     TXIE  = 0;  // Disable Transmit Interrupt
+   272:         RCIE  = 1;  // Enable Receive  Interrupt
+   273:         PEIE  = 1;  // Enable peripheral interrupts
+   274: }
+   275: 
+   276: 
+   277: //--------------------------------------------
+   278: // void Init_swtimers(void)
+   279: //   Initialize the timers driven off hw TM0
+   280: //--------------------------------------------
+   281: void Init_swtimers(void)
+   282: {
+   283:   //Software Timer0 for the gripper
+   284:   gSwtimer[0].cmp = 0x4;
+   285:   gSwtimer[0].cnt = 0;
+   286:   gSwtimer[0].enable = FALSE;
+   287: 
+   288:   // Software Timer1 for the OS
+   289:   gSwtimer[1].cmp = 1;
+   290:   gSwtimer[1].cnt = 0;
+   291:   gSwtimer[1].enable = TRUE;  
+   292: }
+   293: 
+   294: //--------------------------------------------
+   295: // void Init_hwtimers(void)
+   296: //   Initialize the timers
+   297: //--------------------------------------------
+   298: void Init_hwtimers(void)
+   299: {
+   300:   //Hardware Timer0
+   301:   T0CS=0;  // Select timer mode
+   302:   T0IE=1; // Enable the interrupt
+   303: 
+   304: /*  Hardware Timer2
+   305:    Set the postscaler to 16
+   306:    Set the prescaller to 1 
+   307: */  
+   308:   T2CON = (0x0f<<3) & (1<<2);
+   309:   TMR2IE=0; // Disable the interrupt
+   310: }
+   311: 
+   312: 
+   313: //--------------------------------------------
+   314: // Print a character to the Rs232 port
+   315: //--------------------------------------------
+   316: void printc(u8 c)
+   317: {
+   318:   // Wait until Uart is ready.
+   319:   while(TXIF==0) NOP;  
+   320:   TXREG=c;  
+   321: }
+   322: 
+   323: //--------------------------------------------
+   324: // Print a string to the Rs232 port
+   325: //--------------------------------------------
+   326: void prints(const u8 c[])
+   327: {
+   328: u8 i;
+   329:         i=0;
+   330:         while(c[i] != NULL)
+   331:         {
+   332:                 printc(c[i]);
+   333:                 i++;
+   334:         }
+   335: }
+   336: 
+   337: 
+   338: //--------------------------------------------
+   339: // Void newline(void)
+   340: //--------------------------------------------
+   341: void newline(void)
+   342: {
+   343:         if(gTerminal)
+   344:         {
+   345:                 printc(0x0a);printc(0x0d);
+   346:         }
+   347: }
+   348: 
+   349: 
+   350: //--------------------------------------------
+   351: // Print an integer to the Rs232 port
+   352: //--------------------------------------------
+   353: void printnum(int n)
+   354: {
+   355: u8 tmp;
+   356:         tmp = 0;
+   357:         while(n>=100)
+   358:         {
+   359:                 n = n -100;
+   360:                 tmp +=1;
+   361:         }
+   362:         printc('0'+tmp);
+   363:         tmp = 0;;
+   364:         while(n>=10)
+   365:         {
+   366:                 n = n -10;
+   367:                 tmp +=1;
+   368:         }
+   369:         printc('0'+tmp);
+   370:         printc('0'+n);
+   371: }
+   372: 
+   373: //--------------------------------------------
+   374: // Print an integer to the Rs232 port
+   375: //--------------------------------------------
+   376: void printnum_4d(int n)
+   377: {
+   378: u8 tmp;
+   379:         tmp = 0;
+   380:         if(n<0)
+   381:         {
+   382:                 printc('-');
+   383:                 n=~((unsigned int)n);
+   384:         }
+   385:         while(n>=1000)
+   386:         {
+   387:                 n = n -1000;
+   388:                 tmp +=1;
+   389:         }       
+   390:         printc('0'+tmp);        
+   391:         while(n>=100)
+   392:         {
+   393:                 n = n -100;
+   394:                 tmp +=1;
+   395:         }
+   396:         printc('0'+tmp);
+   397:         tmp = 0;;
+   398:         while(n>=10)
+   399:         {
+   400:                 n = n -10;
+   401:                 tmp +=1;
+   402:         }
+   403:         printc('0'+tmp);
+   404:         printc('0'+n);
+   405: }
+   406: 
+   407: 
+   408: //--------------------------------------------
+   409: // Check if the receive queue is empty
+   410: //--------------------------------------------
+   411: u8 RXQ_empty(void)
+   412: {
+   413:         if(RXQ.rdptr == RXQ.wrptr)
+   414:                 return(1);
+   415:         else
+   416:                 return(0);
+   417: }
+   418: 
+   419: //--------------------------------------------
+   420: // Returns TRUE if the receive queue has cnt byte
+   421: // available for reading
+   422: //--------------------------------------------
+   423: u8 checkforbytes_RXQ(u8 cnt)
+   424: {
+   425:         if (RXQ.wrptr >= RXQ.rdptr)
+   426:         {
+   427:                 if((RXQ.wrptr - RXQ.rdptr) >= cnt)
+   428:                         return(1);
+   429:         }
+   430:         else
+   431:         {
+   432:                 if (((RXQSIZE - RXQ.rdptr) + RXQ.wrptr) >= cnt)
+   433:                         return(1);
+   434:         }       
+   435:         return(0);
+   436: }
+   437: 
+   438: //--------------------------------------------
+   439: // void WDJ_protocolstack(void)
+   440: //   William Danie Jason Roboto Protocol!
+   441: //--------------------------------------------
+   442: void WDJ_protocol_handler(void)
+   443: {
+   444: u8 data[4];
+   445: static struct sCmd tmpcmd;
+   446: 
+   447:         if (!checkforbytes_RXQ(RXQ.waiting))
+   448:         {       
+   449: /*      
+   450:                 if(++RXQ.timeout > RX_TIMEOUT)
+   451:                 {
+   452:                         printc('!');
+   453:                         RXQ.timeout = 0;
+   454:                         RXQ.forceread = 1;
+   455:                         RXQ.waiting = 0;
+   456:                 }               
+   457: */              
+   458:         }
+   459:         else
+   460:         {       
+   461:                 RXQ.waiting =0;
+   462:                 RXQ.timeout =0;
+   463:                                 
+   464:                 // Try regain sync by moving onto the next character
+   465:                 if(RXQ.forceread)
+   466:                 {       
+   467:                         RXQ.forceread = 0;
+   468:                         read_RXQ();
+   469:                 }
+   470:                                         
+   471:                 switch(readnoinc_RXQ())
+   472:                         {                       
+   473:                                 // repeat the last motor command
+   474:                                 case 'a':
+   475:                                         read_RXQ();
+   476:                                         printc('a');
+   477:                                         Q_write(gMotorselected,&tmpcmd);
+   478:                                 break;
+   479:                                         
+   480:                                 // Command : Select motor;                              
+   481:                                 case 'm':                               
+   482:                                         RXQ.waiting = 2;
+   483:                                         if(checkforbytes_RXQ(RXQ.waiting))
+   484:                                         {
+   485:                                                 read_RXQ();
+   486:                                                 data[0] = read_RXQ();
+   487:                                                 printc('m');
+   488:                                                 switch(data[0])
+   489:                                                 {
+   490:                                                         case 'h':
+   491:                                                                 gMotorselected =0;
+   492:                                                                 printc('h');
+   493:                                                         break;
+   494:                                                         case 'v':
+   495:                                                                 gMotorselected = 1;
+   496:                                                                 printc('v');
+   497:                                                         break;
+   498:                                                         case 'g':
+   499:                                                                 gMotorselected = 2;
+   500:                                                                 printc('g');
+   501:                                                         break;
+   502:                                                         default: 
+   503:                                                                 gMotorselected = 0xff;
+   504:                                                                 printc('!');
+   505:                                                         break;
+   506:                                                 }
+   507:                                                         
+   508:                                                 RXQ.waiting = 0;                                        
+   509:                                         }
+   510:                                 break;                          
+   511: 
+   512:                                 // Command : Home
+   513:                                 case 'c':
+   514:                                         RXQ.waiting = 2;
+   515:                                         if(checkforbytes_RXQ(RXQ.waiting))
+   516:                                         {       
+   517:                                                 read_RXQ();     
+   518:                                                 printc('c');                                                                            
+   519:                                                 if (read_RXQ() == 'd')
+   520:                                                 {
+   521:                                                         if (gMotorselected == 1)
+   522:                                                         {
+   523:                                                                 // Set the maximum number of steps so the motor doesn't burn out if stuck
+   524:                                                                 tmpcmd.dir = CD; tmpcmd.steps = 0;
+   525:                                                                 Q_write(gMotorselected,&tmpcmd);                                                        
+   526:                                                                 printc('d');
+   527:                                                         }
+   528:                                                         else printc('!');
+   529:                                                 }
+   530:                                                 else
+   531:                                                 {
+   532:                                                         printc('!');                                                    
+   533:                                                 }
+   534:                                                 RXQ.waiting = 0;
+   535:                                         }
+   536:                                 break;                          
+   537: 
+   538: 
+   539: 
+   540:                                 // Command : Home
+   541:                                 case 'h':
+   542:                                         RXQ.waiting = 4;
+   543:                                         if(checkforbytes_RXQ(RXQ.waiting))
+   544:                                         {       
+   545:                                                 read_RXQ();     
+   546:                                                 printc('h');                                                                            
+   547:                                                 if ((read_RXQ() == 'o') && (read_RXQ() == 'm') )
+   548:                                                         if (read_RXQ() =='f') 
+   549:                                                         {
+   550:                                                                 // this is a Forced home
+   551:                                                                 tmpcmd.dir = FHOME; tmpcmd.steps = MOTORMAXPOSITION[gMotorselected];                                                            
+   552:                                                                 Q_write(gMotorselected,&tmpcmd);                                                        
+   553:                                                                 printc('o');printc('m');printc('f');
+   554:                                                         }
+   555:                                                         else
+   556:                                                         {
+   557:                                                                 // Soft home
+   558:                                                                 tmpcmd.dir = HOME; tmpcmd.steps = 0;                                                            
+   559:                                                                 Q_write(gMotorselected,&tmpcmd);                                                        
+   560:                                                                 printc('o');printc('m');printc('e');
+   561:                                                         }                                               
+   562:                                                 else
+   563:                                                 {
+   564:                                                         read_RXQ();
+   565:                                                         printc('!');printc('!');printc('!');
+   566:                                                 }
+   567:                                                 RXQ.waiting = 0;
+   568:                                         }
+   569:                                 break;                          
+   570:                                 // goto
+   571:                                 case 'g':
+   572:                                         RXQ.waiting = 4;
+   573:                                         if(checkforbytes_RXQ(RXQ.waiting))
+   574:                                         {
+   575:                                                 read_RXQ();
+   576:                                                 tmpcmd.dir = MOVETO;                                            
+   577:                                                 tmpcmd.steps = (read_RXQ()- '0')*100 + (read_RXQ()-'0')*10 + (read_RXQ()-'0');
+   578:                                                 Q_write(gMotorselected,&tmpcmd);
+   579: 
+   580:                                                 printc('g'); 
+   581:                                                 printnum(tmpcmd.steps);
+   582:                                                 RXQ.waiting = 0;
+   583:                                         }
+   584:                                 break;                          
+   585: 
+   586: 
+   587:                                 
+   588:                                 // Command : Forward
+   589:                                 case 'f':
+   590:                                         RXQ.waiting = 4;
+   591:                                         if(checkforbytes_RXQ(RXQ.waiting))
+   592:                                         {
+   593:                                                 read_RXQ();
+   594:                                                 tmpcmd.dir = FWD;                                               
+   595:                                                 tmpcmd.steps = (read_RXQ()- '0')*100 + (read_RXQ()-'0')*10 + (read_RXQ()-'0');
+   596:                                                 Q_write(gMotorselected,&tmpcmd);
+   597: 
+   598:                                                 printc('f'); 
+   599:                                                 printnum(tmpcmd.steps);
+   600:                                                 RXQ.waiting = 0;
+   601:                                         }
+   602:                                 break;                          
+   603:                                 case 'r':
+   604:                                         RXQ.waiting = 4;
+   605:                                         if(checkforbytes_RXQ(RXQ.waiting))
+   606:                                         {
+   607:                                                 read_RXQ();
+   608:                                                 tmpcmd.dir = REV;
+   609:                                                 tmpcmd.steps = (read_RXQ()- '0')*100 + (read_RXQ()-'0')*10 + (read_RXQ()-'0');
+   610:                                                 Q_write(gMotorselected,&tmpcmd);
+   611:                                                 printc('r'); printnum(tmpcmd.steps);
+   612:                                                 RXQ.waiting = 0;
+   613:                                         }
+   614:                                 break;                          
+   615: 
+   616: 
+   617:                                 case 'v':
+   618:                                         RXQ.waiting = 4;
+   619:                                         if(checkforbytes_RXQ(RXQ.waiting))
+   620:                                         {
+   621:                                                 read_RXQ();
+   622:                                                 motor[gMotorselected].speed = (read_RXQ()- '0')*100 + (read_RXQ()- '0')*10 + (read_RXQ()-'0');
+   623:                                                 printc('v'); printnum(motor[gMotorselected].speed);                                             
+   624:                                                 RXQ.waiting = 0;
+   625:                                         }
+   626:                                 break;                          
+   627:                                                                 
+   628:                                 case 's':                               
+   629:                                                 read_RXQ();
+   630:                                                 printc('s');
+   631:                                                 gStopmotors = 1;                                                
+   632:                                                 RXQ.waiting = 0;                                        
+   633:                                 break;                          
+   634:                                 
+   635:                                 case 'p':
+   636:                                                 read_RXQ();
+   637:                                                 printc('p');
+   638:                                                 printnum_4d(motor[gMotorselected].position);
+   639:                                                 RXQ.waiting = 0;
+   640:                                 break;
+   641:                                 
+   642:                                 case 't':
+   643:                                                 read_RXQ();
+   644:                                                 printc('t');
+   645:                                                 if(gTerminal) gTerminal =0;
+   646:                                                 else gTerminal = 1;
+   647:                                 
+   648:                                 case NULL: // There was no character returned
+   649:                                 break;
+   650:                                 
+   651:                                 default:        // unknown command
+   652:                                         read_RXQ();
+   653:                                         RXQ.waiting = 0;
+   654:                                         printc('?');    
+   655:                                 break;
+   656:                         }
+   657:                         
+   658:                         newline();
+   659:         }
+   660: }
+   661: 
+   662: //--------------------------------------------
+   663: // Stepper motor routines
+   664: //--------------------------------------------
+   665: 
+   666: //-------------------------------------------------
+   667: // Intialize the stepper motors
+   668: //-------------------------------------------------
+   669: void Init_motors(void)
+   670: {
+   671: u8 i;
+   672:         gMotorselected = 0;
+   673:         for(i=0;i<NUMBEROFMOTORS;i++)
+   674:         {
+   675:                 motor[i].state          = IDLE;
+   676:                 motor[i].steps          = 0;
+   677:                 motor[i].step_cnt       = 0;
+   678:                 motor[i].coils          = 0b0000;
+   679:                 motor[i].speed          = MOTORSPEED;
+   680:                 motor[i].speed_cnt      = 0;
+   681:                 motor[i].coilpattern_cnt =0;
+   682:                 motor[i].coils = coilpattern[0];
+   683:                 motor[i].position = 0;
+   684:         }
+   685:         
+   686:         motor[0].speed = 0;
+   687:         motor[1].speed = 2;
+   688: 
+   689:         // 
+   690:         motor[0].position = MOTORMAXPOSITION[0]; 
+   691:         motor[1].position = MOTORMAXPOSITION[1]; 
+   692:         
+   693: }
+   694: 
+   695: 
+   696: //-------------------------------------------------
+   697: // Switch off all Coils
+   698: //-------------------------------------------------
+   699: void motoroff(u8 num)
+   700: {
+   701: u8 tmp;
+   702:         switch(num)
+   703:         {
+   704:                 case 0:
+   705:                         tmp = PORTD & 0b11110000;
+   706:                         PORTD = tmp;
+   707:                 break;
+   708:                 case 1:
+   709:                         tmp = PORTD & 0b00001111;
+   710:                         PORTD = tmp;                    
+   711:                 break;
+   712:                 case 2:
+   713:                         GRIPPER = 0;
+   714:                 break;
+   715:                 default:
+   716:                 break;                  
+   717:         }
+   718: }
+   719: 
+   720: 
+   721: //-------------------------------------------------
+   722: // Update the physical signals of the coils     
+   723: //-------------------------------------------------
+   724: void output_motor(u8 num)
+   725: {
+   726: u8 tmp;
+   727:         switch(num)
+   728:         {
+   729:                 case 0:
+   730:                         tmp = PORTD & 0b11110000;
+   731:                         tmp |= motor[0].coils;
+   732:                         PORTD = tmp;
+   733:                 break;
+   734:                 case 1:
+   735:                         tmp = PORTD & 0b00001111;
+   736:                         tmp |= (motor[1].coils)<<4;
+   737:                         PORTD = tmp;                    
+   738:                 break;
+   739:                 case 2:
+   740:                         // Start the timer
+   741:                         gSwtimer[0].cnt = 0;
+   742:                         gSwtimer[0].enable = 1;
+   743:                         GRIPPER = 1; // switch on the gripper motor;
+   744:                 default:
+   745:                 break;                  
+   746:         }
+   747: }       
+   748: 
+   749: //-------------------------------------------------
+   750: // Motor Home Switch handler 
+   751: //-------------------------------------------------     
+   752: void handle_homeswitches(void)
+   753: {
+   754:         // The flag is cleared in the IDLE routine of the motor
+   755:         if((PORTA & 0x02)>>1)
+   756:         {               
+   757:                 gHomeswitch[0] = 1;
+   758:         }
+   759:         if(!((PORTA&0x04)>>2))
+   760:         {
+   761:                 gHomeswitch[1] = 1;
+   762:         }
+   763:         if(PORTA & 0x01)
+   764:         {               
+   765:                 gHomeswitch[2] = 1;
+   766:         }
+   767: }
+   768: 
+   769: //-------------------------------------------------
+   770: // Print error
+   771: //-------------------------------------------------     
+   772: void error_max(u8 i)
+   773: {
+   774: //      printc('E');printc('_');printc('M');printc('A');printc('X');printc('-');
+   775:         prints(E_MAX_msg);
+   776:         switch(i){ case 0: printc('H');break;
+   777:                            case 1: printc('V');break;
+   778:                            case 2: printc('G');break;
+   779:                          }
+   780: //      printc(' ');
+   781:         newline();
+   782: }
+   783: void error_min(u8 i)
+   784: {
+   785: //      printc('E');printc('_');printc('M');printc('I');printc('N');printc('-');
+   786:         prints(E_MIN_msg);
+   787:         switch(i){ case 0: printc('H');break;
+   788:                            case 1: printc('V');break;
+   789:                            case 2: printc('G');break;
+   790:                          }
+   791: //      printc(' ');
+   792:         newline();
+   793: }
+   794: 
+   795: 
+   796: 
+   797: void error_home(u8 i)
+   798: {
+   799: //      printc('E');printc('_');printc('H');printc('O');printc('M');printc('E');printc('-');
+   800:         prints(E_HOME_msg);
+   801:         switch(i){      case 0: printc('H'); break;
+   802:                                 case 1: printc('V'); break;
+   803:                                 case 2: printc('G'); break;}            
+   804:         newline();
+   805: }
+   806: 
+   807: void error_cd(void)
+   808: {
+   809:         printc('E');printc('_');printc('C');printc('D');printc(' ');printc(' ');printc(' ');printc(' ');
+   810:         newline();
+   811: }
+   812: 
+   813: 
+   814: void ok_home(u8 i)
+   815: {
+   816: //printc('O');printc('K');printc('_');
+   817: prints(OK_HOME_msg);
+   818: switch(i){      case 0: printc('H'); break;
+   819:                         case 1: printc('V'); break;
+   820:                         case 2: printc('G'); break;}            
+   821: newline();
+   822: }
+   823: 
+   824: void ok_cd(void)
+   825: {
+   826: //printc('O');printc('K');printc('_');printc('C');printc('D');
+   827: prints(OK_CD_msg);
+   828: newline();
+   829: dup.ok_cd = 1;
+   830: }
+   831: 
+   832: 
+   833: 
+   834: //-------------------------------------------------
+   835: // Select the next coil to step the motor.
+   836: //-------------------------------------------------     
+   837: void nextcoil(u8 i,u8 dir)
+   838: {
+   839: // The vertical hardware is reversed. Dang
+   840: if (i==1)
+   841: {
+   842:         if (dir ==FWD)
+   843:                 dir = REV;
+   844:         else
+   845:                 dir = FWD;
+   846: }
+   847:                 
+   848: switch(dir)
+   849: {
+   850:         case FWD:       // Horizontal fwd
+   851:                 if(++motor[i].coilpattern_cnt > 7)
+   852:                         motor[i].coilpattern_cnt = 0;
+   853:                 break;
+   854:                 case REV: // horizontal rev
+   855:                         if(motor[i].coilpattern_cnt == 0)
+   856:                                 motor[i].coilpattern_cnt = 7;
+   857:                         else
+   858:                                 motor[i].coilpattern_cnt--;                                                                             
+   859:                 break;
+   860: }
+   861: 
+   862: motor[i].coils = coilpattern[motor[i].coilpattern_cnt];                                                                                                                                         
+   863: }
+   864: 
+   865: 
+   866: 
+   867: //-------------------------------------------------
+   868: // The main handler to step the motors
+   869: //-------------------------------------------------     
+   870: void handle_steppermotors(void)
+   871: {
+   872: u8 i;
+   873: struct sCmd tmpcmd;
+   874: 
+   875:         for(i=0;i<NUMBEROFMOTORS; i++)
+   876:         {
+   877:                 motor[i].state = motor[i].nextstate;            
+   878:                 switch(motor[i].state)
+   879:                 {               
+   880:                 // Check if the motor is IDLE, and if there
+   881:                 // are any more commands for it in the commandQ                         
+   882:                         case IDLE:
+   883:                                 if(Q_checkempty(i)== 0)
+   884:                                 {
+   885:                                         Q_read(i, &tmpcmd);                                     
+   886:                                         motor[i].nextstate = tmpcmd.dir;                                        
+   887:                                         motor[i].step_cnt = 0;
+   888:                                         switch(motor[i].nextstate)
+   889:                                         { 
+   890:                                                 case HOME:                                              
+   891:                                                         if(motor[i].position <0){
+   892:                                                                 motor[i].nextstate = FWD;
+   893:                                                                 motor[i].steps = -(motor[i].position);
+   894:                                                         }
+   895:                                                         else{
+   896:                                                                 motor[i].nextstate = REV;
+   897:                                                                 motor[i].steps = motor[i].position;
+   898:                                                         }                                               
+   899:                                                 break;
+   900:                                                 
+   901:                                                 case CD:
+   902:                                                         motor[i].steps = MOTORMAXPOSITION[i] - motor[i].position;
+   903:                                                 break;
+   904:                                                 
+   905:                                                 case MOVETO:
+   906:                                                         motor[i].moveto = tmpcmd.steps;
+   907:                                                 break;
+   908:                                                 
+   909:                                                 default:
+   910:                                                         motor[i].steps = tmpcmd.steps;                                  
+   911:                                                 break;
+   912:                                         }
+   913: 
+   914:                                         gHomeswitch[0]=0; gHomeswitch[1]=0; gHomeswitch[2]=0;                                                                                                                                           
+   915:                                 }
+   916:                                 else
+   917:                                         motor[i].nextstate = IDLE;
+   918:                         break;
+   919: 
+   920:                         case STOP:
+   921:                                 motor[i].nextstate= HOLD;                       
+   922:                                 // now read all the commands out of the Q
+   923:                                 while(!Q_checkempty(i))
+   924:                                         Q_read(i,&tmpcmd);
+   925:                         break;
+   926: 
+   927:                         case HOLD:
+   928:                                 motoroff(i);
+   929:                                 if (gStopmotors)
+   930:                                         while(!Q_checkempty(i))
+   931:                                                 Q_read(i,&tmpcmd);
+   932:                                                 
+   933:                                 motor[i].nextstate = IDLE;
+   934:                         break;
+   935: 
+   936:                         case NOCD:
+   937:                                 error_cd();
+   938:                                 if (gStopmotors)
+   939:                                         motor[i].nextstate = STOP;
+   940:                                 else    
+   941:                                         motor[i].nextstate = HOLD;
+   942:                         break;
+   943: 
+   944:                         
+   945:                         case NOHOME:
+   946:                                 if (gStopmotors)
+   947:                                         motor[i].nextstate = STOP;
+   948:                                 else                                    
+   949:                                         motor[i].nextstate = HOLD;
+   950:                         break;
+   951: 
+   952:                         case MOVETO:
+   953:                                 if(motor[i].position <= motor[i].moveto)
+   954:                                 {
+   955:                                         motor[i].nextstate = FWD;
+   956:                                         motor[i].steps = motor[i].moveto - motor[i].position;                                   
+   957:                                 }
+   958:                                 else
+   959:                                 {
+   960:                                         motor[i].nextstate = REV;
+   961:                                         motor[i].steps = motor[i].position - motor[i].moveto;                                   
+   962:                                 }
+   963:                         break;
+   964: 
+   965:                         case CD:
+   966:                         case FHOME:
+   967:                         case HOME:                      
+   968:                         case FWD:
+   969:                         case REV:
+   970:                                 if(gStopmotors)
+   971:                                         motor[i].nextstate = STOP;
+   972:                                 else
+   973:                                 {
+   974:                                         // Check if we should step or not yet
+   975:                                         if (++motor[i].speed_cnt > motor[i].speed)                      
+   976:                                         {                                                                       
+   977:                                                 if (++motor[i].step_cnt > motor[i].steps)
+   978:                                                 {       
+   979:                                                         switch(motor[i].state){
+   980:                                                                 case FHOME:
+   981:                                                                 case HOME: motor[i].nextstate = NOHOME; break;
+   982:                                                                 case CD : motor[i].nextstate = NOCD; break;
+   983:                                                                 default : motor[i].nextstate = HOLD; break; }
+   984:                                                 }
+   985:                                                 else
+   986:                                                 {       
+   987:                                                         motor[i].nextstate = motor[i].state;
+   988:                                                         motor[i].speed_cnt = 0;
+   989:                                                         switch(motor[i].state)
+   990:                                                         {
+   991:                                                                 case CD:
+   992:                                                                 case FWD:
+   993:                                                                         if(++motor[i].position > MOTORMAXPOSITION[i])
+   994:                                                                         {
+   995:                                                                                 motor[i].nextstate = STOP;
+   996:                                                                                 error_max(i);
+   997:                                                                         }
+   998:                                                                         // load the next pattern
+   999:                                                                         nextcoil(i,FWD);
+  1000:                                                                 break;
+  1001:                                                                 
+  1002:                                                                 case REV:
+  1003:                                                                         if(--motor[i].position < MOTORMINPOSITION[i])                                           
+  1004:                                                                         {
+  1005:                                                                                 motor[i].nextstate = STOP;                                                                      
+  1006:                                                                                 error_min(i);
+  1007:                                                                         }
+  1008:                                                                         nextcoil(i,REV);
+  1009:                                                                 break;
+  1010:                                                                         
+  1011:                                                                 case FHOME:                                                     
+  1012:                                                                         motor[i].position--;                                                            
+  1013:                                                                         nextcoil(i,REV);
+  1014:                                                                 break;
+  1015:                                                                 case HOME:      
+  1016:                                                                         if(motor[i].position < 0)
+  1017:                                                                         {
+  1018:                                                                                 motor[i].position++;
+  1019:                                                                                 nextcoil(i,FWD);
+  1020:                                                                         }
+  1021:                                                                         else
+  1022:                                                                         {
+  1023:                                                                                 motor[i].position--;
+  1024:                                                                                 nextcoil(i,REV);
+  1025:                                                                         }
+  1026:                                                                 break;
+  1027:                                                                                                                                                                                                                                                                         
+  1028:                                                                 default : 
+  1029:                                                                 break;
+  1030:                                                         }                               
+  1031:                                                         output_motor(i);
+  1032:                                                 }
+  1033:                                         }
+  1034:                                 
+  1035:                                 if ((motor[i].state == FHOME) && (gHomeswitch[i]))
+  1036:                                 {
+  1037:                                         ok_home(i);
+  1038:                                         motor[i].nextstate = HOLD;
+  1039:                                         motor[i].position = 0;
+  1040:                                 }
+  1041:                                 if ((motor[i].state == CD) && (gHomeswitch[2]))
+  1042:                                 {
+  1043:                                         ok_cd();
+  1044:                                         motor[i].nextstate = HOLD;
+  1045:                                 }
+  1046:                                 
+  1047:                         }
+  1048:                         break;
+  1049:                 
+  1050:                         default:
+  1051:                         break;  
+  1052:                         }
+  1053:                 }                       
+  1054:         gStopmotors = 0;                
+  1055: }
+  1056: 
+  1057: 
+  1058: 
+  1059: //--------------------------------------------
+  1060: // handle_led()
+  1061: //--------------------------------------------
+  1062: void handle_led(void)
+  1063: {
+  1064:         if(++gLedcnt > 200)
+  1065:         {
+  1066:                 LED0 = !LED0;
+  1067:                 gLedcnt = 0;
+  1068:         }
+  1069: }
+  1070: 
+  1071: 
+  1072: //--------------------------------------------
+  1073: // Init_cmdQ(void)
+  1074: //--------------------------------------------
+  1075: void Init_cmdQ(void)
+  1076: {
+  1077:         for(i=0;i<NUMBEROFMOTORS; i++)
+  1078:         {
+  1079:                 gCmdQ[i].rdptr = 0;
+  1080:                 gCmdQ[i].wrptr = 0;     
+  1081:         }
+  1082: }
+  1083: 
+  1084: //--------------------------------------------
+  1085: // Init_message()
+  1086: //--------------------------------------------
+  1087: /*
+  1088: void Init_message(void)
+  1089: {       
+  1090:         printc('R');printc('O');printc('B');printc('O');printc('T');printc('O');printc(' ');
+  1091:     printc('R');printc('E');printc('A');printc('D');printc('Y'); 
+  1092:         printc(0x0a);printc(0x0d);
+  1093: }
+  1094: */
+  1095: //--------------------------------------------
+  1096: // Init_world() load the positions of the stacks
+  1097: // and tray
+  1098: //--------------------------------------------
+  1099: void Init_world(void)
+  1100: {
+  1101:         gWorld.tray.h = 0; gWorld.tray.v = 300;
+  1102:         gWorld.instack.h = 200; gWorld.instack.v = 200;
+  1103:         gWorld.outstack.h = 400; gWorld.instack.v = 600;        
+  1104: }
+  1105: 
+  1106: //--------------------------------------------
+  1107: // Init_homemotors()
+  1108: //--------------------------------------------
+  1109: void Init_homemotors(void)
+  1110: {
+  1111: struct sCmd tmpcmd;
+  1112:         tmpcmd.dir = FHOME; tmpcmd.steps = MOTORMAXPOSITION[0];
+  1113:         Q_write(0,&tmpcmd);                                                     
+  1114:         tmpcmd.dir = FHOME; tmpcmd.steps = MOTORMAXPOSITION[1];
+  1115:         Q_write(1,&tmpcmd);                                                                     
+  1116: }
+  1117: 
+  1118: 
+  1119: //--------------------------------------------
+  1120: // Duplicator_statemachine()
+  1121: // Controls the machine to pick up grab drop cd's
+  1122: //--------------------------------------------
+  1123: void duplicator_statemachine(void)
+  1124: {
+  1125: struct sCmd cmd;
+  1126: 
+  1127: dup.state = dup.nextstate;
+  1128: 
+  1129: switch(dup.state)
+  1130: {
+  1131:         case IDLE:
+  1132:                 dup.nextstate = INSTACK;
+  1133:         break;
+  1134:         case INSTACK:
+  1135:                 dup.nextstate = WAIT_CD_INSTACK;                
+  1136:                 cmd.dir = MOVETO;cmd.steps = gWorld.instack.h;
+  1137:                 Q_write(MH,&cmd);
+  1138:                 cmd.dir = MOVETO;cmd.steps = gWorld.instack.v;
+  1139:                 Q_write(MV,&cmd);
+  1140:                 // move down to the cd now
+  1141:                 cmd.dir = CD;cmd.steps = 0;
+  1142:                 Q_write(MV,&cmd);
+  1143:                 
+  1144:         break;
+  1145:         case WAIT_CD_INSTACK:
+  1146:                 if (dup.ok_cd)
+  1147:                 {
+  1148:                         dup.ok_cd = 0;
+  1149:                         dup.nextstate = WAIT_GRAB_INSTACK;
+  1150:                         cmd.dir=FWD;cmd.steps=20;
+  1151:                         motor[MG].speed = 020;
+  1152:                         Q_write(MG,&cmd);
+  1153:                 }                       
+  1154:         break;
+  1155:         case WAIT_GRAB_INSTACK:
+  1156:                 if (dup.ok_grab)
+  1157:                 {
+  1158:                         dup.ok_grab = 0;
+  1159:                         cmd.dir=MOVETO; cmd.steps = gWorld.tray.h;
+  1160:                         Q_write(MH,&cmd);
+  1161:                         dup.nextstate = HALT;
+  1162:                 }
+  1163:         
+  1164:         case HALT:
+  1165:                 dup.nextstate = HALT;
+  1166:         break;
+  1167:         
+  1168:         default:
+  1169:         break;
+  1170: }
+  1171: }
+  1172: 
+  1173: 
+  1174: //--------------------------------------------
+  1175: // Main(void)
+  1176: //--------------------------------------------
+  1177: void main(void)
+  1178: {
+  1179:   Init();       
+  1180:   Init_comms();
+  1181:   Init_cmdQ();
+  1182:   Init_motors();
+  1183:   Init_swtimers();
+  1184:   Init_hwtimers();
+  1185:   Init_world();
+  1186:         
+  1187:   gHomeswitch[0] = 0; gHomeswitch[1] = 0; gHomeswitch[2] = 0;  
+  1188:   Init_homemotors();
+  1189:   prints(READY_msg);newline();
+  1190:   dup.state = dup.nextstate = IDLE;
+  1191:   while(1)
+  1192:   {
+  1193:                   
+  1194:           // Check if there are any characters in the Q just waiting to be read
+  1195:           if(!RXQ_empty()) 
+  1196:                 WDJ_protocol_handler();
+  1197:                         
+  1198:           // Check if the timer has timed out to step the motors
+  1199:           if(gStepmotors) 
+  1200:           {     
+  1201:                   gStepmotors =0;
+  1202:                   handle_homeswitches();
+  1203:                   handle_steppermotors();
+  1204:                   handle_led();                         
+  1205:                   duplicator_statemachine();
+  1206:            }
+  1207:         
+  1208:   }
+  1209: }
