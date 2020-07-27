@@ -1,0 +1,73 @@
+   1               		.file	"lowlevel.c"
+   2               		.arch atmega168
+   3               	__SREG__ = 0x3f
+   4               	__SP_H__ = 0x3e
+   5               	__SP_L__ = 0x3d
+   6               	__tmp_reg__ = 0
+   7               	__zero_reg__ = 1
+   8               		.global __do_copy_data
+   9               		.global __do_clear_bss
+  11               		.text
+  12               	.Ltext0:
+  58               	.global	read_fuse_lock
+  60               	read_fuse_lock:
+   1:lowlevel.c    **** //
+   2:lowlevel.c    **** //  Low-level routines to read lock and fuse-bytes
+   3:lowlevel.c    **** //
+   4:lowlevel.c    **** //  Copyright (C) 2/2005 Martin Thomas, Kaiserslautern, Germany
+   5:lowlevel.c    **** //
+   6:lowlevel.c    **** 
+   7:lowlevel.c    **** #include "lowlevel.h"
+   8:lowlevel.c    **** 
+   9:lowlevel.c    **** unsigned char read_fuse_lock(unsigned short addr, unsigned char mode)
+  10:lowlevel.c    **** {
+  62               	.LM1:
+  63               	/* prologue: frame size=0 */
+  64               	/* prologue end (size=0) */
+  11:lowlevel.c    **** 	unsigned char retval;
+  12:lowlevel.c    **** 	
+  13:lowlevel.c    **** 	asm volatile
+  66               	.LM2:
+  67               	/* #APP */
+  68 0000 FC01      		movw r30, r24
+  69 0002 6093 5700 		sts 87, r22
+  70 0006 C895      		lpm
+  71 0008 802D      		mov r24,r0
+  72               		
+  14:lowlevel.c    **** 	(
+  15:lowlevel.c    **** 		"movw r30, %3\n\t" /* Z to addr */ \
+  16:lowlevel.c    **** 		"sts %0, %2\n\t" /* set mode in SPM_REG */ \
+  17:lowlevel.c    **** 		"lpm\n\t"  /* load fuse/lock value into r0 */ \
+  18:lowlevel.c    **** 		"mov %1,r0\n\t" /* save return value */ \
+  19:lowlevel.c    **** 		: "=m" (SPM_REG),
+  20:lowlevel.c    **** 		  "=r" (retval)
+  21:lowlevel.c    **** 		: "r" (mode),
+  22:lowlevel.c    **** 		  "r" (addr)
+  23:lowlevel.c    **** 		: "r30", "r31", "r0"
+  24:lowlevel.c    **** 	);
+  25:lowlevel.c    **** 	return retval;
+  26:lowlevel.c    **** }
+  74               	.LM3:
+  75               	/* #NOAPP */
+  76 000a 9927      		clr r25
+  77               	/* epilogue: frame size=0 */
+  78 000c 0895      		ret
+  79               	/* epilogue end (size=1) */
+  80               	/* function read_fuse_lock size 12 (11) */
+  85               	.Lscope0:
+  86               		.text
+  88               	Letext:
+  89               	/* File "lowlevel.c": code   12 = 0x000c (  11), prologues   0, epilogues   1 */
+DEFINED SYMBOLS
+                            *ABS*:00000000 lowlevel.c
+                            *ABS*:0000003f __SREG__
+                            *ABS*:0000003e __SP_H__
+                            *ABS*:0000003d __SP_L__
+                            *ABS*:00000000 __tmp_reg__
+                            *ABS*:00000001 __zero_reg__
+C:\DOCUME~1\JVANAA~1\LOCALS~1\Temp/cca4aaaa.s:60     .text:00000000 read_fuse_lock
+C:\DOCUME~1\JVANAA~1\LOCALS~1\Temp/cca4aaaa.s:88     .text:0000000e Letext
+
+UNDEFINED SYMBOLS
+__do_copy_data
+__do_clear_bss

@@ -1,0 +1,47 @@
+
+              /// <summary>
+            /// Method that returns the temperature of the current record. (DS620)
+            /// </summary>
+            /// <returns>The temperature</returns>
+            public double getTemperature()
+            {
+                uint temp = 0;
+                //double x = 0;
+                //byte mostSBit = 0x00; // signed bit
+                byte high = temperatureBytes[0];
+                byte low = temperatureBytes[1];
+                if(high >= 0x80) // if negative temperature value. ie. 
+most significant bit is set Math.Pow(2,7)
+                {
+                    unchecked
+                    {
+                        //mostSBit = 0x01; // store the value of the signed bit
+                        temp = 0xFFFF0000;
+                    }
+                }
+                uint kimi = ((uint)high <<1) |((uint)low>>7);
+                temp = (uint)temp | ((uint)kimi<<4);
+                temp = temp | (uint)((low&0x7F)>>3);
+                int t = (int)temp;
+                double toReturn = (double)((double)t / (double)16);   
+                return(toReturn);
+            }
+
+            /// <summary>
+            /// Utility method that does the inverse of "getTemperatute".
+            /// ie. It takes the normal temperature value and converts
+            /// it back into two seperate bytes
+            /// </summary>
+            /// <param name="temperature">The temperature </param>
+            /// <returns></returns>
+            public static int convertTemperatureToBytes(double temperature)
+            {
+                // JANUS INSERT HERE!!!
+                ///////////////////////
+                // Inserted
+                
+                double t = (double)((double)temperature * (double)16);  
+                
+                
+            }
+

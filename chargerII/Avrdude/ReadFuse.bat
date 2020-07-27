@@ -1,0 +1,1 @@
+avrdude -v -c stk500v2 -p m88  -U lfuse:r:"./lfuse.fus":r -U hfuse:r:"./hfuse.fus":r -U efuse:r:"./efuse.fus":r

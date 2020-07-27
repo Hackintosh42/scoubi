@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<project>
+  <fileVersion>0</fileVersion>
+  <configuration>
+    <name>Debug</name>
+    <file>
+      <name>$PROJ_DIR$\Debug\Exe\bootloader.a90</name>
+      <inputs>
+        <name>$PROJ_DIR$\link.xcl</name>
+        <name>$PROJ_DIR$\Debug\Obj\main.r90</name>
+        <name>$PROJ_DIR$\Debug\Obj\serial.r90</name>
+        <name>$TOOLKIT_DIR$\lib\clib\cl3s-ec-sf.r90</name>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\main.c</name>
+      <outputs>
+        <name>$PROJ_DIR$\Debug\Obj\main.r90</name>
+        <name>$PROJ_DIR$\Debug\List\main.lst</name>
+      </outputs>
+      <inputs>
+        <name>$TOOLKIT_DIR$\INC\inavr.h</name>
+        <name>$PROJ_DIR$\defines.h</name>
+        <name>$TOOLKIT_DIR$\INC\iom169.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomacro.h</name>
+        <name>$PROJ_DIR$\serial.h</name>
+        <name>$PROJ_DIR$\flash.h</name>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\serial.c</name>
+      <outputs>
+        <name>$PROJ_DIR$\Debug\Obj\serial.r90</name>
+        <name>$PROJ_DIR$\Debug\List\serial.lst</name>
+      </outputs>
+      <inputs>
+        <name>$PROJ_DIR$\defines.h</name>
+        <name>$TOOLKIT_DIR$\INC\iom169.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomacro.h</name>
+      </inputs>
+    </file>
+  </configuration>
+  <configuration>
+    <name>Release</name>
+    <file>
+      <name>$PROJ_DIR$\main.c</name>
+      <outputs>
+        <name>$PROJ_DIR$\Release\Obj\main.r90</name>
+      </outputs>
+      <inputs>
+        <name>$TOOLKIT_DIR$\INC\inavr.h</name>
+        <name>$PROJ_DIR$\defines.h</name>
+        <name>$TOOLKIT_DIR$\INC\iom169.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomacro.h</name>
+      </inputs>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\serial.c</name>
+      <outputs>
+        <name>$PROJ_DIR$\Release\Obj\serial.r90</name>
+      </outputs>
+      <inputs>
+        <name>$PROJ_DIR$\defines.h</name>
+        <name>$TOOLKIT_DIR$\INC\iom169.h</name>
+        <name>$TOOLKIT_DIR$\INC\iomacro.h</name>
+      </inputs>
+    </file>
+  </configuration>
+</project>
+
+
